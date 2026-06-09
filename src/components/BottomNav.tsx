@@ -4,10 +4,10 @@ import { usePathname } from "next/navigation";
 import { Home, Calendar, Users, User } from "lucide-react";
 
 const navItems = [
-  { href: "/member", label: "Home", icon: Home },
-  { href: "/dashboard", label: "Runs", icon: Calendar },
-  { href: "/members", label: "Members", icon: Users },
-  { href: "/member#profile", label: "Profile", icon: User },
+  { href: "/member",    label: "Home",    icon: Home },
+  { href: "/dashboard", label: "Runs",    icon: Calendar },
+  { href: "/members",   label: "Members", icon: Users },
+  { href: "/profile",   label: "Profile", icon: User },
 ];
 
 export default function BottomNav() {
@@ -15,11 +15,15 @@ export default function BottomNav() {
   return (
     <nav className="nav-bar">
       {navItems.map(({ href, label, icon: Icon }) => {
-        const base = href.split("#")[0];
-        const active = pathname === base || (base !== "/" && pathname.startsWith(base));
+        const active = pathname === href || (href !== "/" && pathname.startsWith(href));
         return (
-          <Link key={href} href={href} className={`nav-item ${active ? "active" : ""}`}>
-            <Icon size={22} />
+          <Link
+            key={href}
+            href={href}
+            className={`nav-item ${active ? "active" : ""}`}
+            transitionTypes={["nav-tab"]}
+          >
+            <Icon size={22} strokeWidth={active ? 2.5 : 2} />
             <span>{label}</span>
           </Link>
         );

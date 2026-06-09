@@ -37,6 +37,7 @@ export default function InvitePage() {
         <Link
           href="/member"
           className="btn-primary w-full max-w-sm justify-center text-lg"
+          transitionTypes={["nav-forward"]}
           style={{ minHeight: "56px", fontSize: "1.0625rem" }}
         >
           Join Sydney Striders Free

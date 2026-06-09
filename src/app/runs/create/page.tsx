@@ -1,7 +1,9 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, Plus, Trash2, Save } from "lucide-react";
+import { useToast } from "@/components/ToastProvider";
 
 interface PaceGroup {
   id: number;
@@ -11,17 +13,38 @@ interface PaceGroup {
   leader: string;
 }
 
+const fieldStyle: React.CSSProperties = {
+  width: "100%",
+  borderRadius: "0.75rem",
+  padding: "0.75rem 1rem",
+  fontSize: "0.9375rem",
+  fontWeight: 500,
+  border: "1.5px solid var(--border)",
+  background: "var(--background)",
+  color: "var(--navy)",
+  outline: "none",
+  transition: "border-color 0.15s",
+};
+
 export default function CreateRunPage() {
-  const [title, setTitle] = useState("Tuesday Morning Run");
-  const [date, setDate] = useState("2026-06-10");
-  const [time, setTime] = useState("05:30");
+  const router = useRouter();
+  const { toast } = useToast();
+  const [saving, setSaving] = useState(false);
+
+  const [title,        setTitle]        = useState("Tuesday Morning Run");
+  const [date,         setDate]         = useState(() => {
+    const d = new Date(); d.setDate(d.getDate() + 2);
+    return d.toISOString().split("T")[0];
+  });
+  const [time,         setTime]         = useState("05:30");
   const [meetingPoint, setMeetingPoint] = useState("Centennial Park, Gate 5");
-  const [mapsLink, setMapsLink] = useState("");
-  const [distance, setDistance] = useState("10");
-  const [routeLink, setRouteLink] = useState("");
-  const [notes, setNotes] = useState("");
-  const [paceGroups, setPaceGroups] = useState<PaceGroup[]>([
-    { id: 1, label: "Fast Group", minPace: "4:30", maxPace: "4:59", leader: "James K." },
+  const [mapsLink,     setMapsLink]     = useState("");
+  const [distance,     setDistance]     = useState("10");
+  const [routeLink,    setRouteLink]    = useState("");
+  const [notes,        setNotes]        = useState("");
+  const [asTemplate,   setAsTemplate]   = useState(false);
+  const [paceGroups,   setPaceGroups]   = useState<PaceGroup[]>([
+    { id: 1, label: "Fast Group",   minPace: "4:30", maxPace: "4:59", leader: "James K." },
     { id: 2, label: "Steady Group", minPace: "5:00", maxPace: "5:29", leader: "Marcus T." },
     { id: 3, label: "Social Group", minPace: "5:30", maxPace: "6:00", leader: "Lisa R." },
   ]);
@@ -38,16 +61,31 @@ export default function CreateRunPage() {
     setPaceGroups(prev => prev.map(g => g.id === id ? { ...g, [field]: value } : g));
   };
 
+  const handleSave = async () => {
+    setSaving(true);
+    await new Promise(r => setTimeout(r, 800));
+    setSaving(false);
+    toast("Run saved! Members will be notified ✓", "success");
+    if (asTemplate) toast("Saved as weekly template", "info");
+    setTimeout(() => router.push("/dashboard"), 600);
+  };
+
   return (
     <div className="min-h-screen pb-12" style={{ background: "var(--surface)" }}>
       {/* Header */}
-      <header className="px-4 py-4 flex items-center gap-3 sticky top-0 z-30 border-b" style={{ background: "var(--navy)", borderColor: "var(--navy-light)" }}>
-        <Link href="/dashboard" className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }}>
+      <header className="px-4 py-3 flex items-center gap-3 sticky top-0 z-30 border-b" style={{ background: "var(--navy)", borderColor: "var(--navy-light)" }}>
+        <Link href="/dashboard" transitionTypes={["nav-back"]} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }}>
           <ArrowLeft size={18} className="text-white" />
         </Link>
         <h1 className="font-bold text-white flex-1">Create Run</h1>
-        <button className="flex items-center gap-1.5 px-4 rounded-xl text-sm font-bold text-white" style={{ background: "var(--orange)", minHeight: "44px" }}>
-          <Save size={14} /> Save
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="flex items-center gap-1.5 px-4 rounded-xl text-sm font-bold text-white"
+          style={{ background: saving ? "rgba(249,115,22,0.6)" : "var(--orange)", minHeight: "44px", border: "none", cursor: saving ? "default" : "pointer", transition: "background 0.2s" }}
+        >
+          <Save size={14} className={saving ? "animate-spin" : ""} />
+          {saving ? "Saving…" : "Save"}
         </button>
       </header>
 
@@ -58,98 +96,44 @@ export default function CreateRunPage() {
 
           <div>
             <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>RUN TITLE</label>
-            <input
-              type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
-              placeholder="e.g. Tuesday Morning Run"
-              className="w-full rounded-xl px-4 py-3 text-sm font-semibold border focus:outline-none focus:ring-2 transition-shadow"
-              style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-            />
+            <input type="text" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Tuesday Morning Run" style={fieldStyle} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>DATE</label>
-              <input
-                type="date"
-                value={date}
-                onChange={e => setDate(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold border focus:outline-none"
-                style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-              />
+              <input type="date" value={date} onChange={e => setDate(e.target.value)} style={fieldStyle} />
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>TIME</label>
-              <input
-                type="time"
-                value={time}
-                onChange={e => setTime(e.target.value)}
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold border focus:outline-none"
-                style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-              />
+              <input type="time" value={time} onChange={e => setTime(e.target.value)} style={fieldStyle} />
             </div>
           </div>
 
           <div>
             <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>MEETING POINT</label>
-            <input
-              type="text"
-              value={meetingPoint}
-              onChange={e => setMeetingPoint(e.target.value)}
-              placeholder="e.g. Centennial Park, Gate 5"
-              className="w-full rounded-xl px-4 py-3 text-sm font-semibold border focus:outline-none"
-              style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-            />
+            <input type="text" value={meetingPoint} onChange={e => setMeetingPoint(e.target.value)} placeholder="e.g. Centennial Park, Gate 5" style={fieldStyle} />
           </div>
 
           <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>GOOGLE MAPS LINK (optional)</label>
-            <input
-              type="url"
-              value={mapsLink}
-              onChange={e => setMapsLink(e.target.value)}
-              placeholder="https://maps.google.com/..."
-              className="w-full rounded-xl px-4 py-3 text-sm border focus:outline-none"
-              style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-            />
+            <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>GOOGLE MAPS LINK <span style={{ fontWeight: 400 }}>(optional)</span></label>
+            <input type="url" value={mapsLink} onChange={e => setMapsLink(e.target.value)} placeholder="https://maps.google.com/…" style={{ ...fieldStyle, fontWeight: 400 }} />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>DISTANCE (km)</label>
-              <input
-                type="number"
-                value={distance}
-                onChange={e => setDistance(e.target.value)}
-                placeholder="10"
-                className="w-full rounded-xl px-4 py-3 text-sm font-semibold border focus:outline-none"
-                style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-              />
+              <input type="number" value={distance} onChange={e => setDistance(e.target.value)} placeholder="10" style={fieldStyle} />
             </div>
             <div>
               <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>ROUTE LINK</label>
-              <input
-                type="url"
-                value={routeLink}
-                onChange={e => setRouteLink(e.target.value)}
-                placeholder="Strava / Garmin URL"
-                className="w-full rounded-xl px-4 py-3 text-sm border focus:outline-none"
-                style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-              />
+              <input type="url" value={routeLink} onChange={e => setRouteLink(e.target.value)} placeholder="Strava / Garmin" style={{ ...fieldStyle, fontWeight: 400 }} />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>NOTES (optional)</label>
-            <textarea
-              value={notes}
-              onChange={e => setNotes(e.target.value)}
-              placeholder="Any extra info for runners..."
-              rows={3}
-              className="w-full rounded-xl px-4 py-3 text-sm border focus:outline-none resize-none"
-              style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-            />
+            <label className="block text-xs font-bold mb-1.5" style={{ color: "var(--muted)" }}>NOTES <span style={{ fontWeight: 400 }}>(optional)</span></label>
+            <textarea value={notes} onChange={e => setNotes(e.target.value)} placeholder="Any extra info for runners…" rows={3} style={{ ...fieldStyle, resize: "none" }} />
           </div>
         </div>
 
@@ -157,8 +141,8 @@ export default function CreateRunPage() {
         <div className="card space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-bold" style={{ color: "var(--navy)" }}>Pace Groups</h2>
-            <button onClick={addPaceGroup} className="flex items-center gap-1 text-xs font-bold px-4 rounded-lg" style={{ background: "rgba(249,115,22,0.1)", color: "var(--orange)", minHeight: "44px" }}>
-              <Plus size={12} /> Add Group
+            <button onClick={addPaceGroup} className="flex items-center gap-1.5 rounded-xl text-xs font-bold px-4" style={{ background: "rgba(249,115,22,0.1)", color: "var(--orange)", border: "none", cursor: "pointer", minHeight: "44px" }}>
+              <Plus size={13} /> Add Group
             </button>
           </div>
 
@@ -167,65 +151,34 @@ export default function CreateRunPage() {
               <div key={group.id} className="rounded-xl p-3 border" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold" style={{ color: "var(--muted)" }}>GROUP {i + 1}</span>
-                  <button onClick={() => removePaceGroup(group.id)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
-                    <Trash2 size={12} />
+                  <button onClick={() => removePaceGroup(group.id)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(220,38,38,0.08)", color: "#dc2626", border: "none", cursor: "pointer" }}>
+                    <Trash2 size={14} />
                   </button>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="col-span-2">
-                    <input
-                      type="text"
-                      value={group.label}
-                      onChange={e => updateGroup(group.id, "label", e.target.value)}
-                      placeholder="Group name (e.g. Fast Group)"
-                      className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none"
-                      style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-                    />
+                <div className="space-y-2">
+                  <input type="text" value={group.label} onChange={e => updateGroup(group.id, "label", e.target.value)} placeholder="Group name (e.g. Fast Group)" style={{ ...fieldStyle, padding: "0.625rem 0.875rem" }} />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input type="text" value={group.minPace} onChange={e => updateGroup(group.id, "minPace", e.target.value)} placeholder="Min pace (4:30)" style={{ ...fieldStyle, padding: "0.625rem 0.875rem" }} />
+                    <input type="text" value={group.maxPace} onChange={e => updateGroup(group.id, "maxPace", e.target.value)} placeholder="Max pace (4:59)" style={{ ...fieldStyle, padding: "0.625rem 0.875rem" }} />
                   </div>
-                  <input
-                    type="text"
-                    value={group.minPace}
-                    onChange={e => updateGroup(group.id, "minPace", e.target.value)}
-                    placeholder="Min pace (4:30)"
-                    className="rounded-lg px-3 py-2.5 text-sm border focus:outline-none"
-                    style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-                  />
-                  <input
-                    type="text"
-                    value={group.maxPace}
-                    onChange={e => updateGroup(group.id, "maxPace", e.target.value)}
-                    placeholder="Max pace (4:59)"
-                    className="rounded-lg px-3 py-2.5 text-sm border focus:outline-none"
-                    style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-                  />
-                  <div className="col-span-2">
-                    <input
-                      type="text"
-                      value={group.leader}
-                      onChange={e => updateGroup(group.id, "leader", e.target.value)}
-                      placeholder="Leader name"
-                      className="w-full rounded-lg px-3 py-2.5 text-sm border focus:outline-none"
-                      style={{ borderColor: "var(--border)", background: "var(--background)", color: "var(--navy)" }}
-                    />
-                  </div>
+                  <input type="text" value={group.leader} onChange={e => updateGroup(group.id, "leader", e.target.value)} placeholder="Leader name" style={{ ...fieldStyle, padding: "0.625rem 0.875rem" }} />
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Save as Template */}
-        <label className="card flex items-center gap-3 cursor-pointer">
-          <input type="checkbox" className="w-5 h-5 rounded accent-orange-500" />
+        {/* Save as template */}
+        <label className="card flex items-center gap-3 cursor-pointer" style={{ userSelect: "none" }}>
+          <input type="checkbox" checked={asTemplate} onChange={e => setAsTemplate(e.target.checked)} style={{ width: 20, height: 20, accentColor: "var(--orange)", cursor: "pointer" }} />
           <div>
             <div className="font-semibold text-sm" style={{ color: "var(--navy)" }}>Save as weekly template</div>
             <div className="text-xs" style={{ color: "var(--muted)" }}>Pre-fill these details for future runs</div>
           </div>
         </label>
 
-        {/* Save Button */}
-        <button className="btn-primary w-full justify-center text-lg" style={{ minHeight: "52px" }}>
-          <Save size={18} /> Save Run
+        <button onClick={handleSave} disabled={saving} className="btn-primary w-full justify-center text-base" style={{ minHeight: "52px" }}>
+          <Save size={17} /> {saving ? "Saving…" : "Save Run"}
         </button>
       </div>
     </div>
