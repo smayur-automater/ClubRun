@@ -1,8 +1,14 @@
 import Stripe from 'stripe'
 
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-06-20',
-})
+let _stripe: Stripe | null = null
+export function getStripe() {
+  if (!_stripe) {
+    _stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? 'placeholder', {
+      apiVersion: '2026-05-27.dahlia' as const,
+    })
+  }
+  return _stripe
+}
 
 export const PLANS = {
   free: {

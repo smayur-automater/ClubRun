@@ -1,7 +1,12 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-const FROM = process.env.RESEND_FROM_EMAIL || 'runs@clubrun.com.au'
+// Lazy-initialize so build doesn't fail without env vars present
+let _resend: Resend | null = null
+function getResend() {
+  if (!_resend) _resend = new Resend(process.env.RESEND_API_KEY ?? 'placeholder')
+  return _resend
+}
+function FROM() { return process.env.RESEND_FROM_EMAIL || 'runs@clubrun.com.au' }
 
 function baseLayout(title: string, body: string) {
   return `<!DOCTYPE html>
@@ -66,8 +71,8 @@ export async function sendNewRunEmail(to: string[], data: RunEmailData) {
     <a href="${data.appUrl}/member/dashboard" class="btn">RSVP Now</a>
   `
 
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `New run: ${data.runTitle} — ${dateStr}`,
     html: baseLayout(`New run: ${data.runTitle}`, body),
@@ -99,8 +104,8 @@ export async function sendRsvpConfirmationEmail(to: string, data: {
     <a href="${data.appUrl}/member/dashboard" class="btn">View Run Details</a>
   `
 
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to: [to],
     subject: `RSVP confirmed: ${data.runTitle} — ${dateStr}`,
     html: baseLayout('RSVP Confirmed', body),
@@ -108,8 +113,6 @@ export async function sendRsvpConfirmationEmail(to: string, data: {
 }
 
 export async function sendRunReminderEmail(to: string[], data: RunEmailData & { goingCount: number }) {
-  const dateStr = new Date(data.date).toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' })
-
   const body = `
     <h2>Run reminder — tomorrow! ⏰</h2>
     <p><strong>${data.runTitle}</strong> is happening tomorrow. ${data.goingCount} runners are going.</p>
@@ -122,8 +125,8 @@ export async function sendRunReminderEmail(to: string[], data: RunEmailData & { 
     <a href="${data.appUrl}/member/dashboard" class="btn">View Details</a>
   `
 
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `Reminder: ${data.runTitle} is tomorrow at ${data.time.slice(0,5)}`,
     html: baseLayout('Run Reminder', body),
@@ -164,8 +167,8 @@ export async function sendWeeklySummaryEmail(to: string[], data: WeeklySummaryDa
     <a href="${data.appUrl}/member/dashboard" class="btn">View & RSVP</a>
   `
 
-  return resend.emails.send({
-    from: FROM,
+  return getResend().emails.send({
+    from: FROM(),
     to,
     subject: `${data.clubName} — your runs next week`,
     html: baseLayout('Weekly Summary', body),

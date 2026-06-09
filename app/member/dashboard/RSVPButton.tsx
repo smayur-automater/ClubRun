@@ -53,6 +53,14 @@ export default function RSVPButton({
       })
     }
 
+    if (status === 'going') {
+      fetch('/api/send-rsvp-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ runId: run.id, userId, paceGroupId: selectedPaceGroup || null }),
+      }).catch(() => {})
+    }
+
     setShowModal(false)
     setLoading(false)
     router.refresh()

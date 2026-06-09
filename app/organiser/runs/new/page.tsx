@@ -86,6 +86,13 @@ export default function NewRunPage() {
       )
     }
 
+    // Notify members in background — best effort
+    fetch('/api/new-run-notify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ runId: run.id }),
+    }).catch(() => {})
+
     router.push(`/organiser/runs/${run.id}`)
   }
 
