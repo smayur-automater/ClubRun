@@ -35,7 +35,7 @@ export default function RSVPPage() {
     <div className="min-h-screen pb-8" style={{ background: "var(--surface)" }}>
       {/* Header */}
       <header className="px-4 py-4 flex items-center gap-3 sticky top-0 z-30 border-b" style={{ background: "var(--navy)", borderColor: "var(--navy-light)" }}>
-        <Link href="/member" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.1)" }}>
+        <Link href="/member" className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }}>
           <ArrowLeft size={18} className="text-white" />
         </Link>
         <div>

@@ -21,7 +21,7 @@ export default function OrgDashboard() {
             <div className="text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>47 members</div>
           </div>
         </div>
-        <button className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.1)" }}>
+        <button className="w-11 h-11 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.1)" }}>
           <Settings size={18} className="text-white" />
         </button>
       </header>
@@ -73,13 +73,13 @@ export default function OrgDashboard() {
 
           {/* Action Buttons */}
           <div className="flex gap-2">
-            <Link href="/runs/create" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold border-2" style={{ borderColor: "var(--navy)", color: "var(--navy)" }}>
+            <Link href="/runs/create" className="flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold border-2" style={{ borderColor: "var(--navy)", color: "var(--navy)", minHeight: "44px" }}>
               <Edit size={14} /> Edit Run
             </Link>
-            <Link href="/members" className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold border-2" style={{ borderColor: "var(--navy)", color: "var(--navy)" }}>
+            <Link href="/members" className="flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold border-2" style={{ borderColor: "var(--navy)", color: "var(--navy)", minHeight: "44px" }}>
               <List size={14} /> Full List
             </Link>
-            <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-bold text-white" style={{ background: "var(--navy)" }}>
+            <button className="flex-1 flex items-center justify-center gap-1.5 rounded-xl text-xs font-bold text-white" style={{ background: "var(--navy)", minHeight: "44px" }}>
               <Bell size={14} /> Remind
             </button>
           </div>
@@ -113,7 +113,7 @@ export default function OrgDashboard() {
                   <div className="font-bold text-sm truncate" style={{ color: "var(--navy)" }}>{run.title}</div>
                   <div className="text-xs" style={{ color: "var(--muted)" }}>{run.date} · {run.rsvp} RSVPs</div>
                 </div>
-                <Link href="/runs/create" className="text-xs font-semibold px-3 py-1.5 rounded-lg" style={{ background: "var(--surface)", color: "var(--muted)" }}>Edit</Link>
+                <Link href="/runs/create" className="text-xs font-semibold px-4 rounded-lg flex items-center" style={{ background: "var(--surface)", color: "var(--muted)", minHeight: "44px" }}>Edit</Link>
               </div>
             ))}
           </div>

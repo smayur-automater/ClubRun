@@ -13,7 +13,7 @@ export default function LandingPage() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/member" className="text-sm font-medium hidden sm:block" style={{ color: "rgba(255,255,255,0.8)" }}>Sign In</Link>
-            <Link href="/dashboard" className="btn-primary text-sm" style={{ minHeight: "36px", padding: "0.5rem 1rem" }}>Start Free Trial</Link>
+            <Link href="/dashboard" className="btn-primary text-sm">Start Free Trial</Link>
           </div>
         </div>
       </header>
@@ -188,9 +188,9 @@ export default function LandingPage() {
           </div>
           <p className="text-sm" style={{ color: "rgba(255,255,255,0.5)" }}>© 2026 Xfiniti Technologies Pty Ltd</p>
           <div className="flex gap-6 text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <a href="#" className="hover:text-white transition-colors py-3 inline-block">Privacy Policy</a>
+            <a href="#" className="hover:text-white transition-colors py-3 inline-block">Terms</a>
+            <a href="#" className="hover:text-white transition-colors py-3 inline-block">Contact</a>
           </div>
         </div>
       </footer>

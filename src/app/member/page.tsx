@@ -84,7 +84,7 @@ export default function MemberDashboard() {
           </div>
 
           {rsvp === "going" && (
-            <Link href="/rsvp" className="mt-3 flex items-center justify-between p-2.5 rounded-xl text-sm" style={{ background: "rgba(249,115,22,0.08)" }}>
+            <Link href="/rsvp" className="mt-3 flex items-center justify-between px-3 rounded-xl text-sm" style={{ background: "rgba(249,115,22,0.08)", minHeight: "44px" }}>
               <span className="font-semibold" style={{ color: "var(--navy)" }}>Change pace group</span>
               <ChevronRight size={14} style={{ color: "var(--muted)" }} />
             </Link>

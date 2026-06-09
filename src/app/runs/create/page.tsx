@@ -42,11 +42,11 @@ export default function CreateRunPage() {
     <div className="min-h-screen pb-12" style={{ background: "var(--surface)" }}>
       {/* Header */}
       <header className="px-4 py-4 flex items-center gap-3 sticky top-0 z-30 border-b" style={{ background: "var(--navy)", borderColor: "var(--navy-light)" }}>
-        <Link href="/dashboard" className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: "rgba(255,255,255,0.1)" }}>
+        <Link href="/dashboard" className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)" }}>
           <ArrowLeft size={18} className="text-white" />
         </Link>
         <h1 className="font-bold text-white flex-1">Create Run</h1>
-        <button className="flex items-center gap-1.5 px-4 py-2 rounded-xl text-sm font-bold text-white" style={{ background: "var(--orange)", minHeight: "40px" }}>
+        <button className="flex items-center gap-1.5 px-4 rounded-xl text-sm font-bold text-white" style={{ background: "var(--orange)", minHeight: "44px" }}>
           <Save size={14} /> Save
         </button>
       </header>
@@ -157,7 +157,7 @@ export default function CreateRunPage() {
         <div className="card space-y-4">
           <div className="flex items-center justify-between">
             <h2 className="font-bold" style={{ color: "var(--navy)" }}>Pace Groups</h2>
-            <button onClick={addPaceGroup} className="flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-lg" style={{ background: "rgba(249,115,22,0.1)", color: "var(--orange)" }}>
+            <button onClick={addPaceGroup} className="flex items-center gap-1 text-xs font-bold px-4 rounded-lg" style={{ background: "rgba(249,115,22,0.1)", color: "var(--orange)", minHeight: "44px" }}>
               <Plus size={12} /> Add Group
             </button>
           </div>
@@ -167,7 +167,7 @@ export default function CreateRunPage() {
               <div key={group.id} className="rounded-xl p-3 border" style={{ borderColor: "var(--border)", background: "var(--surface)" }}>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold" style={{ color: "var(--muted)" }}>GROUP {i + 1}</span>
-                  <button onClick={() => removePaceGroup(group.id)} className="w-6 h-6 rounded-full flex items-center justify-center" style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
+                  <button onClick={() => removePaceGroup(group.id)} className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(220,38,38,0.1)", color: "#dc2626" }}>
                     <Trash2 size={12} />
                   </button>
                 </div>
