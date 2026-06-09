@@ -45,6 +45,8 @@ export default async function MemberDashboard() {
           </div>
           <div className="flex items-center gap-3">
             <Link href="/member/runs" className="text-sm text-gray-600 hover:text-gray-900">All Runs</Link>
+            <Link href="/member/attendance" className="text-sm text-gray-600 hover:text-gray-900">My Runs</Link>
+            <Link href="/member/safety" className="text-sm text-gray-600 hover:text-gray-900">Safety</Link>
             <Link href="/member/profile" className="text-sm text-gray-600 hover:text-gray-900">Profile</Link>
             <Link href="/auth/signout" className="text-sm text-gray-500 hover:text-gray-700">Sign out</Link>
           </div>

@@ -40,7 +40,7 @@ export default async function MembersPage() {
               const p = m.profiles
               const fullName = [p?.first_name, p?.last_name].filter(Boolean).join(' ') || 'Unknown'
               return (
-                <div key={m.id} className="bg-white rounded-xl border border-gray-200 p-4">
+                <Link key={m.id} href={`/organiser/members/${m.user_id}`} className="bg-white rounded-xl border border-gray-200 p-4 block hover:border-orange-200 transition-colors">
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export default async function MembersPage() {
                       Emergency: {p.emergency_contact}
                     </div>
                   )}
-                </div>
+              </Link>
               )
             })}
           </div>

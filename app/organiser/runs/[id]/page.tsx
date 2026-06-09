@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import CancelRunButton from './CancelRunButton'
+import MarkCompleteButton from './MarkCompleteButton'
 
 export default async function RunDetailPage({ params }: { params: { id: string } }) {
   const supabase = createClient()
@@ -53,6 +54,17 @@ export default async function RunDetailPage({ params }: { params: { id: string }
               className="text-sm border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-50">
               Edit
             </Link>
+            <Link href={`/organiser/runs/${run.id}/attendance`}
+              className="text-sm border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-50">
+              Attendance
+            </Link>
+            <Link href={`/organiser/runs/${run.id}/safety`}
+              className="text-sm border border-gray-200 px-3 py-1.5 rounded-lg text-gray-600 hover:bg-gray-50">
+              Safety
+            </Link>
+            {run.status === 'scheduled' && run.date <= new Date().toISOString().split('T')[0] && (
+              <MarkCompleteButton runId={run.id} />
+            )}
             {run.status === 'scheduled' && <CancelRunButton runId={run.id} />}
           </div>
         </div>

@@ -49,6 +49,7 @@ export default async function OrganiserDashboard() {
           <div className="flex items-center gap-3 flex-wrap">
             <Link href="/organiser/members" className="text-sm text-gray-600 hover:text-gray-900">Members</Link>
             <Link href="/organiser/runs" className="text-sm text-gray-600 hover:text-gray-900">All Runs</Link>
+            <Link href="/organiser/leaderboard" className="text-sm text-gray-600 hover:text-gray-900">Leaderboard</Link>
             <Link href="/organiser/billing" className="text-sm text-gray-600 hover:text-gray-900">Billing</Link>
             <Link href="/organiser/runs/new"
               className="bg-orange-500 text-white text-sm px-4 py-2 rounded-lg font-medium hover:bg-orange-600">
