@@ -1,31 +1,30 @@
-# ClubRun — Monetization Strategy
+# ClubRuns — Monetization (Phase 4)
 
-Maintained by: Marketing & Growth agent. Pricing/model changes require CEO sign-off (record in `docs/DECISIONS.md`).
+Owner: Marketing agent; pricing changes need CEO sign-off (log in `docs/DECISIONS.md`).
 
-## Current model (shipped)
+## Model: three-layer freemium, club-anchored
 
-- Members: free
-- Club managers: A$19/month per club (displayed on the landing page; not yet wired to a payment processor)
+Recommended as highest-LTV because retention is social (churning means leaving your crew), which compounds every layer.
 
-## Rationale
+### Layer 1 — Free (the growth engine)
+Join clubs, RSVP, track runs, streaks, basic stats, badges. Free must be genuinely great: every free member makes clubs more valuable and pulls in more members (viral loop = the run invite).
 
-B2B2C wedge — clubs (the manager/organizer) are the paying customer because they get clear ROI (replacing spreadsheet/WhatsApp chaos), while free membership maximizes the network effect that makes a club's ClubRun page worth paying for in the first place.
+### Layer 2 — ClubRuns+ (consumer subscription, target ~A$9/mo or A$69/yr)
+Advanced analytics (pace zones, elevation, trends, PR progression), unlimited history, AI coach + race predictions (future phase), custom goals, premium badges. Converts the engaged 5–8% once they have a streak to protect.
 
-## Expansion opportunities (from AGENTS.md's monetization menu — unevaluated, CEO + Marketing to prioritize)
+### Layer 3 — Club Pro (organizer subscription, target ~A$29/mo per club)
+Attendance analytics, recurring events, pace-group management, QR check-in, announcements with push, safety check-ins, member CRM. Sold to the organizer whose alternative is spreadsheets; priced under "one member's monthly coffee budget" justification.
 
-Rough LTV/effort ordering, needs real evaluation before committing to any of these:
+### Layer 4 (later) — Transactional
+Event ticketing take-rate (5–8%) for club races and paid sessions; coach marketplace take-rate; affiliate (shoes/nutrition) inside gear-tracking features. Explicitly excluded: NFTs.
 
-1. Club Manager Pro tiering (advanced analytics, attendance/QR check-in, pacer tools) — natural upsell on the existing paying segment
-2. Premium personal analytics / AI coach subscription — direct-to-consumer recurring revenue once tracking features exist
-3. Event ticketing + race registration fees — transactional revenue tied to the events/RSVP feature already built
-4. Coach marketplace / training-plan marketplace — take-rate marketplace, higher effort, needs coach supply-side first
-5. Sportswear/nutrition affiliate marketplace — low-effort incremental revenue, lower LTV
-6. Corporate wellness subscriptions — large ACV, longest sales cycle, needs corporate-facing features that don't exist yet
+## Sequencing
 
-Explicitly excluded: NFTs (per AGENTS.md).
+v1 ships everything free to maximize network density. Instrument first (activation, W4 retention, runs-per-member), gate later — do not launch paywalls before the loop retains. Revisit after beta metrics exist.
 
-## Not yet done
+## Key metrics to instrument before any paywall
 
-- No analytics/instrumentation to validate any pricing tier
-- No payment processing integration
-- No experiment (A/B test) on the A$19 price point
+- Activation: signup → first RSVP → first attended run
+- W4 member retention; runs/member/month
+- Club density (members per club, RSVPs per run)
+- Invite conversion rate (the viral loop)

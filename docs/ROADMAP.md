@@ -1,53 +1,40 @@
-# ClubRun — Living Roadmap
+# ClubRuns — Living Roadmap
 
-Maintained by: CEO agent. Update phase/milestone status here whenever a deliverable is approved. This file, together with `docs/DECISIONS.md`, is ClubRun's project memory — read both before making product decisions.
+Maintained by: CEO agent. This file plus `docs/DECISIONS.md` is the project memory — read both before product decisions.
 
 ## Product
 
-ClubRun — a mobile-first social platform connecting runners (morning/evening/night/weekend/marathon/casual/beginner) with running clubs, corporate wellness groups, universities, schools, charities, race organizers, coaches, and gyms.
+**ClubRuns — never run alone.** Mobile-first social running platform built around the group run as the atomic unit. Full vision and constraints: `AGENTS.md`. Product reset 2026-07-01: the prior "ClubRun" club-admin SaaS (and the parked full-stack branch `claude/determined-wright-xf7b7h`) are retired; history preserved on their branches.
 
 ## Phase status
 
-Per AGENTS.md's required workflow (Phase 1 → Phase 16). Status reflects reality, including where engineering shipped ahead of process — flagged as a gap below.
-
-| # | Phase | Status | Notes |
+| # | Phase | Status | Artifact |
 |---|---|---|---|
-| 1 | Market research | Not started | Backfill needed |
-| 2 | Competitor analysis | Not started | Backfill needed |
-| 3 | Unique value proposition | Informal only | Landing page stakes UVP as "your running club deserves better than a WhatsApp group" — never formalized |
-| 4 | Monetization | Partial | Shipped model: free members / A$19-month club subscription — see `docs/MONETIZATION.md`; full opportunity menu unevaluated |
-| 5 | PRD | Backfilled | See `docs/PRD.md` — reconstructed from the shipped MVP, needs CEO validation |
-| 6 | Technical architecture | Partial | Next.js App Router PWA; no backend, auth, or DB yet — all data is mocked client-side |
-| 7 | Database design | Not started | No schema exists |
-| 8 | User flows | Implicit | Flows exist as shipped screens but were never diagrammed first |
-| 9 | Wireframes | Skipped | Went straight to high-fidelity |
-| 10 | High-fidelity UI | Done (v1) | 7 screens shipped — see MVP surface below |
-| 11 | Design system | Backfilled | See `docs/DESIGN_SYSTEM.md` — reconstructed from `globals.css` |
-| 12 | Engineering implementation | In progress | MVP shipped: landing, dashboard, member, members, profile, rsvp, runs/create, invite |
-| 13 | Testing | Not started | No test suite exists |
-| 14 | Beta launch | Not started | |
+| 1 | Market research | Done (v1) | `docs/STRATEGY.md` |
+| 2 | Competitor analysis | Done (v1) | `docs/STRATEGY.md` |
+| 3 | Unique value proposition | Done (v1) | `docs/STRATEGY.md` |
+| 4 | Monetization | Done (v1) | `docs/MONETIZATION.md` — free-first, gate after retention data |
+| 5 | PRD | Done (v1) | `docs/PRD.md` |
+| 6 | Technical architecture | Done (v1) | `docs/ARCHITECTURE.md` |
+| 7 | Database design | Designed | Schema in `docs/ARCHITECTURE.md`; implemented at backend milestone |
+| 8 | User flows | Done (v1) | `docs/USER_FLOWS.md` |
+| 9 | Wireframes | Merged into 10 | Deliberate: flows doc + design system make separate wireframes ceremony for a 4-agent team |
+| 10 | High-fidelity UI | Done (v1) | The v1 build itself |
+| 11 | Design system | Done (v1) | `docs/DESIGN_SYSTEM.md` (Volt on Carbon) |
+| 12 | Engineering implementation | **v1 shipped** | 7 screens over typed mock repository — see PRD scope |
+| 13 | Testing | Next | Unit tests for `format`/tracker/derivations, then Playwright smoke |
+| 14 | Beta launch | Blocked on backend | Gate: real auth + DB + instrumentation (see ARCHITECTURE v2) |
 | 15 | Marketing launch | Not started | |
 | 16 | Growth | Not started | |
 
-## Gap note (CEO)
+## Milestones
 
-Phases 1–3 and 5–9 were never produced as artifacts before Phase 12 implementation began — the MVP was built first and the strategy is being reconstructed after the fact. This is process debt: the CEO agent should not approve significant net-new feature scope until Phases 1–4 get a real pass, since the product is currently built on unvalidated assumptions (Australian running clubs, A$19/month, WhatsApp-replacement UVP).
+- **M1 — v1 member MVP** (this build): onboarding, home, explore, club detail, run detail + RSVP, record, profile — mocked data behind API-shaped repository. ✅
+- **M2 — Quality**: unit tests on pure logic, Playwright smoke, CI. 
+- **M3 — Backend**: Supabase auth + Postgres schema from ARCHITECTURE.md, swap `lib/data.ts` mocks for real queries, instrumentation (activation/retention funnels).
+- **M4 — Organizer tools** (Club Pro surface): create club/run, recurring runs, attendance, QR check-in, announcements+push.
+- **M5 — Beta** (Phase 14): 3–5 real clubs, measure the PRD metrics before any paywall.
 
-## Current MVP surface
+## Standing CEO reviews
 
-- Landing page (`/`) — marketing site, pricing, hero
-- Dashboard (`/dashboard`)
-- Member profile view (`/member`)
-- Members list (`/members`)
-- User profile (`/profile`)
-- RSVP flow (`/rsvp`)
-- Run creation (`/runs/create`)
-- Invite flow (`/invite`)
-- Shared: bottom nav, dark/light theme, toasts, skeleton loaders, view-transition page navigation, PWA manifest
-
-## Next milestone candidates (for CEO to sequence)
-
-- Backfill Phases 1–4 before adding more surface area
-- Real backend: auth, database schema, API layer (Phase 6–7 debt)
-- Test suite (Phase 13 debt — currently zero coverage)
-- Club Manager tooling (event creation, attendance, QR check-in) — in AGENTS.md's core feature list, not yet built
+Every milestone: engineering deliverable vs ARCHITECTURE.md standards, UI vs DESIGN_SYSTEM.md bar, and the four marketing questions (love/retention/revenue/virality) answered in the PR description.

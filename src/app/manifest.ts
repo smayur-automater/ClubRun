@@ -2,18 +2,16 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "ClubRun — Running Club Management",
-    short_name: "ClubRun",
-    description: "Manage runs, pace groups, RSVPs and members for your Australian running club.",
-    start_url: "/member",
+    name: "ClubRuns",
+    short_name: "ClubRuns",
+    description: "Never run alone. Find your crew, RSVP, show up, track it together.",
+    start_url: "/",
     display: "standalone",
-    background_color: "#1a2e4a",
-    theme_color: "#1a2e4a",
-    orientation: "portrait",
+    background_color: "#0b0c0f",
+    theme_color: "#0b0c0f",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { src: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    categories: ["sports", "productivity"],
   };
 }

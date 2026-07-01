@@ -19,4 +19,14 @@ Maintained by: CEO agent. Append a dated entry for every material product, archi
 
 **2026-07-01 — Stood up the four-agent operating structure (CEO, Engineering, UI/UX, Marketing) as Claude Code subagents, plus this roadmap/decision-log/PRD/monetization/design-system doc set — CEO.**
 Reasoning: AGENTS.md calls for autonomous, collaborating agents with persistent project memory. Implementing them as reusable subagent definitions (rather than one-off prompting each session) makes the governance process durable across sessions instead of being re-derived from scratch every time.
-Immediate next call for the CEO agent: sequence the Phase 1–4 backfill before approving new feature scope.
+
+**2026-07-01 — PRODUCT RESET (user directive): retire all prior code, build ClubRuns as a new product — CEO.**
+The prior "ClubRun" club-admin SaaS (7-screen MVP on this branch's history) and the independent full-stack build (`claude/determined-wright-xf7b7h`: Supabase/Stripe/attendance) are both retired. History stays recoverable on those branches; nothing is force-deleted. Supersedes the pre-log entries above about A$19/month pricing, the Australian-wedge GTM, and the navy/orange brand — all retired with the old product.
+
+**2026-07-01 — ClubRuns v1 strategy ratified (Phases 1–8, 11) — CEO, with Marketing/Engineering/UI-UX.**
+- UVP: "never run alone" — group run as the atomic unit (`docs/STRATEGY.md`)
+- Monetization: three-layer freemium (free / ClubRuns+ / Club Pro), free-first until retention data exists (`docs/MONETIZATION.md`)
+- Architecture: typed repository layer over mocks, API-shaped so backend swap is one module; DB schema designed up front (`docs/ARCHITECTURE.md`)
+- Design language: Volt on Carbon, dark-first (`docs/DESIGN_SYSTEM.md`)
+- Phase 9 (wireframes) deliberately merged into Phase 10 for a 4-agent team — flows doc + design system carry that weight
+- v1 scope: member-facing 7 screens (`docs/PRD.md`); organizer tools are M4, backend is M3 and gates beta
