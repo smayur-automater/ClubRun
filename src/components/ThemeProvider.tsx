@@ -1,42 +1,46 @@
 "use client";
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useSyncExternalStore } from "react";
 
-type Theme = "light" | "dark";
+type Theme = "dark" | "light";
 
-interface ThemeCtx {
-  theme: Theme;
-  toggle: () => void;
+/**
+ * Theme state lives in localStorage (the external store); React subscribes
+ * via useSyncExternalStore, so there is no setState-in-effect and the server
+ * snapshot is always "dark" — the default register (docs/DESIGN_SYSTEM.md).
+ */
+const listeners = new Set<() => void>();
+
+function readTheme(): Theme {
+  return (localStorage.getItem("cr.theme") as Theme | null) ?? "dark";
 }
 
-const ThemeContext = createContext<ThemeCtx>({ theme: "light", toggle: () => {} });
+function writeTheme(next: Theme): void {
+  localStorage.setItem("cr.theme", next);
+  listeners.forEach((l) => l());
+}
+
+function subscribe(listener: () => void): () => void {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+const ThemeContext = createContext<{ theme: Theme; toggle: () => void }>({
+  theme: "dark",
+  toggle: () => {},
+});
 
 export function useTheme() {
   return useContext(ThemeContext);
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("light");
+  const theme = useSyncExternalStore(subscribe, readTheme, () => "dark" as Theme);
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme") as Theme | null;
-    const sys = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-    const initial = stored ?? sys;
-    setTheme(initial);
-    document.documentElement.classList.toggle("dark", initial === "dark");
-  }, []);
+    document.documentElement.classList.toggle("light", theme === "light");
+  }, [theme]);
 
-  const toggle = () => {
-    setTheme(prev => {
-      const next = prev === "light" ? "dark" : "light";
-      document.documentElement.classList.toggle("dark", next === "dark");
-      localStorage.setItem("theme", next);
-      return next;
-    });
-  };
+  const toggle = () => writeTheme(theme === "dark" ? "light" : "dark");
 
-  return (
-    <ThemeContext.Provider value={{ theme, toggle }}>
-      {children}
-    </ThemeContext.Provider>
-  );
+  return <ThemeContext.Provider value={{ theme, toggle }}>{children}</ThemeContext.Provider>;
 }

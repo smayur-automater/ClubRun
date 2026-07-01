@@ -1,202 +1,151 @@
 "use client";
-import { useState } from "react";
-import { Edit2, Moon, Sun, Bell, Shield, LogOut, ChevronRight, Check } from "lucide-react";
-import BottomNav from "@/components/BottomNav";
+import { useEffect, useState } from "react";
+import { Flame, Lock, Moon, Sun, Footprints } from "lucide-react";
+import { TabBar } from "@/components/TabBar";
 import { useTheme } from "@/components/ThemeProvider";
-import { useToast } from "@/components/ToastProvider";
-
-const pbs = [
-  { dist: "5km",          time: "22:14" },
-  { dist: "10km",         time: "47:32" },
-  { dist: "Half Marathon",time: "1:48:55" },
-];
-
-type NotifKey = "reminders" | "newRuns" | "clubUpdates";
+import * as data from "@/lib/data";
+import type { Activity, Badge, PersonalRecord, Profile } from "@/lib/types";
+import { formatDuration, formatKm, formatPace, formatShortDate } from "@/lib/format";
 
 export default function ProfilePage() {
   const { theme, toggle } = useTheme();
-  const { toast } = useToast();
+  const [profile, setProfile] = useState<Profile | null>(null);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [records, setRecords] = useState<PersonalRecord[]>([]);
+  const [badges, setBadges] = useState<Badge[]>([]);
+  const [streak, setStreak] = useState(0);
 
-  const [notifs, setNotifs] = useState<Record<NotifKey, boolean>>({
-    reminders:   true,
-    newRuns:     true,
-    clubUpdates: false,
-  });
+  useEffect(() => {
+    (async () => {
+      const [p, a, r, b, s] = await Promise.all([
+        data.getProfile(),
+        data.getActivities(),
+        data.getRecords(),
+        data.getBadges(),
+        data.getStreakWeeks(),
+      ]);
+      setProfile(p);
+      setActivities(a);
+      setRecords(r);
+      setBadges(b);
+      setStreak(s);
+    })();
+  }, []);
 
-  const toggleNotif = (key: NotifKey) => {
-    setNotifs(prev => {
-      const next = { ...prev, [key]: !prev[key] };
-      toast(next[key] ? "Notifications enabled" : "Notifications disabled", "info");
-      return next;
-    });
-  };
+  if (!profile) {
+    return (
+      <div className="page px-4 pt-6 flex flex-col gap-4">
+        <div className="skeleton h-16 w-full" />
+        <div className="skeleton h-28 w-full" />
+        <div className="skeleton h-40 w-full" />
+        <TabBar />
+      </div>
+    );
+  }
+
+  const totalKm = activities.reduce((sum, a) => sum + a.distanceM, 0);
 
   return (
-    <div className="page-wrapper" style={{ background: "var(--surface)" }}>
-      {/* Header */}
-      <header className="px-4 pt-6 pb-5" style={{ background: "var(--navy)", viewTransitionName: "app-header" }}>
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl flex items-center justify-center font-black text-white text-2xl flex-shrink-0" style={{ background: "var(--orange)" }}>SC</div>
-            <div>
-              <div className="font-black text-xl text-white leading-tight">Sarah Chen</div>
-              <div className="text-sm mt-0.5" style={{ color: "rgba(255,255,255,0.6)" }}>sydney.striders · Member since Jan 2025</div>
-              <div className="badge mt-2 text-white text-xs" style={{ background: "rgba(249,115,22,0.3)", border: "1px solid rgba(249,115,22,0.5)" }}>
-                5:00/km pace group
-              </div>
-            </div>
+    <div className="page">
+      <header className="px-4 pt-6 pb-4 flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <span
+            className="flex items-center justify-center w-14 h-14 rounded-full text-lg font-black"
+            style={{ background: "var(--volt)", color: "var(--volt-ink)" }}
+          >
+            {profile.initials}
+          </span>
+          <div>
+            <h1 className="text-xl font-black tracking-tight">{profile.name}</h1>
+            <p className="text-sm font-semibold" style={{ color: "var(--muted)" }}>
+              @{profile.handle} · {profile.homeArea}
+            </p>
           </div>
-          <button className="w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: "rgba(255,255,255,0.1)", border: "none", cursor: "pointer" }}>
-            <Edit2 size={16} className="text-white" />
-          </button>
         </div>
+        <button
+          type="button"
+          onClick={toggle}
+          className="flex items-center justify-center w-11 h-11 rounded-full"
+          style={{ background: "var(--surface)", border: "1px solid var(--border)", color: "var(--muted)" }}
+          aria-label={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+        >
+          {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+      </header>
 
-        {/* Stats strip */}
-        <div className="flex gap-4 mt-5 pt-4 border-t" style={{ borderColor: "rgba(255,255,255,0.12)" }}>
-          {[["31","Runs this year"],["5","Week streak"],["#2","Club rank"]].map(([v,l]) => (
-            <div key={l} className="flex-1 text-center">
-              <div className="font-black text-xl text-white">{v}</div>
-              <div className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>{l}</div>
+      <section className="px-4">
+        <div className="grid grid-cols-3 gap-3 text-center">
+          <div className="card py-4">
+            <p className="stat-value text-xl">{formatKm(totalKm)}</p>
+            <p className="stat-label mt-1.5">km logged</p>
+          </div>
+          <div className="card py-4">
+            <p className="stat-value text-xl">{activities.length}</p>
+            <p className="stat-label mt-1.5">runs</p>
+          </div>
+          <div className="card py-4">
+            <p className="stat-value text-xl inline-flex items-center gap-1" style={{ color: "var(--volt)" }}>
+              <Flame size={18} strokeWidth={2.5} />{streak}
+            </p>
+            <p className="stat-label mt-1.5">week streak</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="px-4 mt-6">
+        <h2 className="stat-label mb-3">Personal records</h2>
+        <div className="grid grid-cols-2 gap-3">
+          {records.map((r) => (
+            <div key={r.label} className="card py-4">
+              <p className="stat-label">{r.label}</p>
+              <p className="stat-value text-2xl mt-1.5">{r.value}</p>
+              <p className="text-xs font-semibold mt-1" style={{ color: "var(--muted)" }}>{r.date}</p>
             </div>
           ))}
         </div>
-      </header>
+      </section>
 
-      <div className="px-4 py-5 max-w-lg mx-auto space-y-4">
-        {/* PBs */}
-        <div className="card">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-bold" style={{ color: "var(--navy)" }}>Personal Bests</h3>
-            <button
-              onClick={() => toast("PB editing coming soon!", "info")}
-              className="text-xs font-semibold px-3 py-1.5 rounded-lg"
-              style={{ background: "rgba(249,115,22,0.1)", color: "var(--orange)", border: "none", cursor: "pointer", minHeight: "44px" }}
-            >
-              + Add PB
-            </button>
-          </div>
-          <div className="space-y-3">
-            {pbs.map(pb => (
-              <div key={pb.dist} className="flex items-center justify-between">
-                <span className="text-sm" style={{ color: "var(--muted)" }}>{pb.dist}</span>
-                <span className="font-black" style={{ color: "var(--navy)" }}>{pb.time}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Club */}
-        <div className="card">
-          <h3 className="font-bold mb-3" style={{ color: "var(--navy)" }}>My Club</h3>
-          <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "var(--surface)" }}>
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center font-black text-white text-sm flex-shrink-0" style={{ background: "var(--navy)" }}>SS</div>
-            <div className="flex-1">
-              <div className="font-bold text-sm" style={{ color: "var(--navy)" }}>Sydney Striders</div>
-              <div className="text-xs" style={{ color: "var(--muted)" }}>47 members · Organiser: James K.</div>
-            </div>
-            <ChevronRight size={16} style={{ color: "var(--muted)" }} />
-          </div>
-        </div>
-
-        {/* Notifications */}
-        <div className="card">
-          <h3 className="font-bold mb-3" style={{ color: "var(--navy)" }}>
-            <span className="flex items-center gap-2"><Bell size={16} style={{ color: "var(--orange)" }} /> Notifications</span>
-          </h3>
-          <div className="space-y-3">
-            {([
-              ["reminders",   "Run reminders",     "24hr reminder before each run"],
-              ["newRuns",     "New runs posted",    "When organiser posts a new run"],
-              ["clubUpdates", "Club updates",       "News and announcements"],
-            ] as [NotifKey, string, string][]).map(([key, label, desc]) => (
-              <div key={key} className="flex items-center justify-between gap-3">
-                <div className="flex-1">
-                  <div className="text-sm font-semibold" style={{ color: "var(--navy)" }}>{label}</div>
-                  <div className="text-xs" style={{ color: "var(--muted)" }}>{desc}</div>
-                </div>
-                <button
-                  onClick={() => toggleNotif(key)}
-                  aria-label={`Toggle ${label}`}
-                  style={{
-                    width: 56, minHeight: 44, background: "none",
-                    border: "none", cursor: "pointer", flexShrink: 0,
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    padding: "8px 4px",
-                  }}
+      <section className="px-4 mt-6">
+        <h2 className="stat-label mb-3">Badges</h2>
+        <div className="grid grid-cols-3 gap-3">
+          {badges.map((b) => {
+            const locked = !b.earnedAt;
+            return (
+              <div key={b.slug} className="card flex flex-col items-center py-4 text-center gap-2" style={locked ? { opacity: 0.45 } : undefined}>
+                <span
+                  className="flex items-center justify-center w-10 h-10 rounded-full"
+                  style={locked
+                    ? { background: "var(--surface-2)", color: "var(--muted)" }
+                    : { background: "color-mix(in srgb, var(--volt) 16%, transparent)", color: "var(--volt)" }}
                 >
-                  <div style={{
-                    width: 48, height: 28, borderRadius: 14, position: "relative",
-                    background: notifs[key] ? "var(--orange)" : "var(--border)",
-                    transition: "background 0.2s", flexShrink: 0,
-                  }}>
-                    <div style={{
-                      position: "absolute", top: 3,
-                      left: notifs[key] ? 23 : 3,
-                      width: 22, height: 22, borderRadius: "50%",
-                      background: "white",
-                      transition: "left 0.2s",
-                      boxShadow: "0 1px 4px rgba(0,0,0,0.25)",
-                    }} />
-                  </div>
-                </button>
+                  {locked ? <Lock size={16} /> : <Footprints size={17} strokeWidth={2.2} />}
+                </span>
+                <span className="text-[0.6875rem] font-extrabold leading-tight tracking-tight">{b.name}</span>
               </div>
-            ))}
-          </div>
+            );
+          })}
         </div>
+      </section>
 
-        {/* Appearance */}
-        <div className="card">
-          <h3 className="font-bold mb-3" style={{ color: "var(--navy)" }}>Appearance</h3>
-          <div className="flex gap-2">
-            {(["light","dark"] as const).map(t => (
-              <button
-                key={t}
-                onClick={() => { if (theme !== t) toggle(); }}
-                className="flex-1 flex items-center justify-center gap-2 rounded-xl border-2 py-3 text-sm font-semibold transition-all"
-                style={{
-                  borderColor: theme === t ? "var(--orange)" : "var(--border)",
-                  color: theme === t ? "var(--orange)" : "var(--muted)",
-                  background: "var(--background)",
-                  cursor: "pointer",
-                }}
-              >
-                {t === "light" ? <Sun size={15} /> : <Moon size={15} />}
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-                {theme === t && <Check size={13} />}
-              </button>
-            ))}
+      <section className="px-4 mt-6 flex flex-col gap-3">
+        <h2 className="stat-label">Recent runs</h2>
+        {activities.map((a) => (
+          <div key={a.id} className="card flex items-center justify-between">
+            <div>
+              <p className="font-extrabold tracking-tight text-sm">{a.title}</p>
+              <p className="text-xs font-semibold mt-0.5" style={{ color: "var(--muted)" }}>
+                {formatShortDate(a.startedAt)} · {formatDuration(a.durationS)}
+              </p>
+            </div>
+            <div className="text-right">
+              <p className="stat-value text-lg">{formatKm(a.distanceM)} <span className="text-xs font-bold" style={{ color: "var(--muted)" }}>km</span></p>
+              <p className="text-xs font-semibold mt-0.5" style={{ color: "var(--muted)" }}>{formatPace(a.avgPaceS)} /km</p>
+            </div>
           </div>
-        </div>
+        ))}
+      </section>
 
-        {/* Account */}
-        <div className="card">
-          <h3 className="font-bold mb-3" style={{ color: "var(--navy)" }}>
-            <span className="flex items-center gap-2"><Shield size={16} style={{ color: "var(--orange)" }} /> Account</span>
-          </h3>
-          <div className="space-y-1">
-            {["Emergency Contact", "Privacy Settings", "Help & Support"].map(item => (
-              <button
-                key={item}
-                onClick={() => toast(`${item} — coming soon`, "info")}
-                className="w-full flex items-center justify-between py-3 text-sm font-semibold"
-                style={{ background: "none", border: "none", color: "var(--navy)", cursor: "pointer", borderBottom: "1px solid var(--border)", minHeight: "52px" }}
-              >
-                {item}
-                <ChevronRight size={15} style={{ color: "var(--muted)" }} />
-              </button>
-            ))}
-            <button
-              onClick={() => toast("Signed out", "info")}
-              className="w-full flex items-center justify-center gap-2 mt-2 py-3 rounded-xl text-sm font-bold"
-              style={{ background: "rgba(220,38,38,0.08)", color: "#dc2626", border: "none", cursor: "pointer", minHeight: "44px" }}
-            >
-              <LogOut size={15} /> Sign Out
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <BottomNav />
+      <TabBar />
     </div>
   );
 }

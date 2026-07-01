@@ -1,19 +1,20 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/ThemeProvider";
-import { ToastProvider } from "@/components/ToastProvider";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  title: "ClubRun — Running Club Management",
-  description: "Manage runs, pace groups, RSVPs, and members for your Australian running club.",
-  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "ClubRun" },
+  title: "ClubRuns — Never run alone",
+  description:
+    "Find your crew, RSVP to the run, show up, track it together. The social running app built around the group run.",
+  appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "ClubRuns" },
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#1a2e4a",
+  themeColor: "#0b0c0f",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
@@ -23,12 +24,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
-      <body className="min-h-screen flex flex-col">
-        <ThemeProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </ThemeProvider>
+      <body className="min-h-screen">
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
