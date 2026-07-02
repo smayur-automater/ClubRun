@@ -41,6 +41,12 @@ The prior "ClubRun" club-admin SaaS (7-screen MVP on this branch's history) and 
 - Deferred from the directive (logged in ROADMAP M1.5): club discussions, photo gallery, calendar view, RunCard map previews.
 
 **2026-07-02 — Production promotion + auth surface (founder directive) — CEO/Engineering.**
-- Production architecture for v1: static-export PWA on GitHub Pages, deployed automatically from main only (`.github/workflows/deploy.yml`). Chosen because v1 is fully client-side over mocks and the repo has no hosting credentials — a real URL today beats a blocked Vercel setup; M3's backend forces the move to a server runtime anyway.
+- Production architecture for v1: static-export PWA, deployed automatically from main only. First attempted via GitHub Pages; superseded same day (below) when the founder confirmed Vercel is connected.
 - Auth ships as screens + a Supabase-shaped seam (`src/lib/auth.ts`: signInWithPassword/signUp/signInWithOAuth-style/reset/signOut over localStorage). Founder will configure Supabase, Stripe, and email at M3; the contract means those land module-by-module with zero screen changes.
 - Feature/monetization advisory recorded in `docs/FEATURE_BACKLOG.md` (three tiers, revenue-line mapping, explicit rejections).
+
+**2026-07-02 — Vercel is production; GitHub Pages deploy retired (founder directive: "always merge into production in Vercel, don't keep in Preview") — CEO/Engineering.**
+- The Pages deploy job failed twice (Pages never enabled on the repo) and is now moot: Vercel's Git integration builds the repo directly. `.github/workflows/deploy.yml` replaced with `ci.yml` (lint + build gate on PRs and main).
+- `vercel.json` disables Vercel deployments for the working and legacy `claude/*` branches — only main produces deployments, so nothing sits in Preview.
+- One-time settings only the founder can flip: GitHub → Settings → Default branch → `main`; Vercel → Project → Settings → Git → Production Branch → `main`. Until then Vercel treats main pushes as Previews because the repo default branch is still the stale `claude/pensive-mccarthy-zddfpt`.
+- Static export stays (Vercel serves it natively); `NEXT_PUBLIC_BASE_PATH` is unset on Vercel so the app serves from the domain root.

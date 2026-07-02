@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "git": {
+    "deploymentEnabled": {
+      "claude/ai-company-agents-7enp8x": false,
+      "claude/pensive-mccarthy-zddfpt": false,
+      "claude/determined-wright-xf7b7h": false
+    }
+  }
+}
