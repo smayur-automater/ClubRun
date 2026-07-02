@@ -55,11 +55,14 @@ export interface Run {
   startsAt: string; // ISO datetime
   meetPoint: string;
   distanceKm: number;
+  elevGainM: number;
   status: RunStatus;
   paceGroups: PaceGroup[];
   goingCount: number;
   /** Short names of a few attendees, for avatar stacks */
   goingPreview: string[];
+  /** Route not yet posted → RouteMap renders its designed empty state */
+  hasRoute: boolean;
 }
 
 export type RsvpStatus = "going" | "out";
@@ -100,4 +103,42 @@ export interface WeeklyProgress {
   goalKm: number;
   doneKm: number;
   runs: number;
+}
+
+export type WeatherCondition = "sun" | "cloud" | "rain" | "snow";
+
+export interface Weather {
+  tempC: number;
+  condition: WeatherCondition;
+  line: string;
+}
+
+export interface FriendActivity {
+  id: string;
+  name: string;
+  initials: string;
+  line: string;
+  when: string; // ISO datetime
+}
+
+export interface LeaderboardEntry {
+  rank: number;
+  name: string;
+  initials: string;
+  role?: string;
+  weekKm: number;
+  isYou: boolean;
+}
+
+/** Kilometres per day for the current week, Monday-first. */
+export interface WeekDay {
+  label: string; // single letter
+  km: number;
+  isToday: boolean;
+}
+
+export interface Achievement {
+  kind: "pr" | "badge" | "streak";
+  title: string;
+  line: string;
 }

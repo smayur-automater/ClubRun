@@ -30,3 +30,12 @@ The prior "ClubRun" club-admin SaaS (7-screen MVP on this branch's history) and 
 - Design language: Volt on Carbon, dark-first (`docs/DESIGN_SYSTEM.md`)
 - Phase 9 (wireframes) deliberately merged into Phase 10 for a 4-agent team — flows doc + design system carry that weight
 - v1 scope: member-facing 7 screens (`docs/PRD.md`); organizer tools are M4, backend is M3 and gates beta
+
+**2026-07-02 — Design system v2 "Cinder & Signal" ratified and shipped (founder brand directive) — CEO, designed by UI/UX, built by Engineering.**
+- Three-accent semantic palette replaces the single-accent Volt on Carbon: `--pace` green = your progress (never a CTA), `--course` athletic blue = facts (routes, pace figures, weather, filters), `--signal` deep orange-red = the one action color (primary buttons, Record, live state). Fixes v1's overloaded green before adding hues could drift rainbow.
+- "Night Stage": GoalRing, BarChart, RouteMap, live Record, and the achievement overlay render on a fixed dark stage in both themes (Apple Fitness/NRC precedent) — solves light-mode contrast for the lime fill honestly and keeps live metrics sun-glanceable.
+- De-pilled radius scale 10/12/14/16px; only true circles stay round.
+- Maps: custom seeded-SVG RouteMap (grid + contour texture, animated route draw, shape-distinct start/finish markers) instead of a tile provider — zero API keys/offline-safe in v1; real tiles revisit at M3.
+- Palette validated with the dataviz six-checks validator: CVD separation and surface contrast pass; the categorical lightness-band check was judged not applicable because the three accents are semantic roles never plotted as one series.
+- Achievement overlay fires only on badge/PR/streak-milestone unlocks, never routine finishes; v1's reachable trigger is the "On the Board" first-recorded-run badge.
+- Deferred from the directive (logged in ROADMAP M1.5): club discussions, photo gallery, calendar view, RunCard map previews.

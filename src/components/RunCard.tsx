@@ -18,7 +18,7 @@ export function RunCard({ run, clubName, rsvp, onRsvp }: Props) {
     <div className="card flex flex-col gap-3">
       <Link href={`/runs/${run.id}`} className="flex flex-col gap-2">
         <div className="flex items-baseline justify-between gap-2">
-          <span className="text-[0.8125rem] font-bold" style={{ color: "var(--volt)" }}>
+          <span className="text-[0.8125rem] font-bold" style={{ color: "var(--course)" }}>
             {formatRunTime(run.startsAt)}
           </span>
           <span className="tag">{run.distanceKm} km</span>
@@ -44,11 +44,12 @@ export function RunCard({ run, clubName, rsvp, onRsvp }: Props) {
             {run.goingCount} going
           </span>
         </div>
+        {/* Signal asks, pace confirms (docs/DESIGN_SYSTEM.md §4) */}
         <button
           type="button"
           onClick={() => onRsvp(going ? null : "going")}
           aria-pressed={going}
-          className={going ? "btn-volt" : "btn-ghost"}
+          className={going ? "btn-confirmed" : "btn-primary"}
           style={{ minHeight: 44, padding: "0.5rem 1.25rem", fontSize: "0.8125rem" }}
         >
           {going ? (<><Check size={15} strokeWidth={3} /> Going</>) : "I'm in"}

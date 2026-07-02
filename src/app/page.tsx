@@ -1,13 +1,16 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Flame, CalendarX } from "lucide-react";
+import Link from "next/link";
+import { Flame, CalendarX, Megaphone, Sun, Cloud, CloudRain, Snowflake, ChevronRight } from "lucide-react";
 import { TabBar } from "@/components/TabBar";
 import { GoalRing } from "@/components/GoalRing";
 import { RunCard } from "@/components/RunCard";
 import { EmptyState } from "@/components/EmptyState";
 import * as data from "@/lib/data";
-import type { Club, Profile, RsvpStatus, Run, WeeklyProgress } from "@/lib/types";
+import type { Announcement, Club, FriendActivity, Profile, RsvpStatus, Run, Weather, WeeklyProgress } from "@/lib/types";
+
+const WEATHER_ICONS = { sun: Sun, cloud: Cloud, rain: CloudRain, snow: Snowflake } as const;
 
 export default function HomePage() {
   const router = useRouter();
@@ -17,6 +20,9 @@ export default function HomePage() {
   const [rsvps, setRsvps] = useState<Map<string, RsvpStatus>>(new Map());
   const [weekly, setWeekly] = useState<WeeklyProgress | null>(null);
   const [streak, setStreak] = useState(0);
+  const [weather, setWeather] = useState<Weather | null>(null);
+  const [friends, setFriends] = useState<FriendActivity[]>([]);
+  const [announcement, setAnnouncement] = useState<Announcement | null>(null);
 
   useEffect(() => {
     if (!localStorage.getItem("cr.onboarded")) {
@@ -24,18 +30,24 @@ export default function HomePage() {
       return;
     }
     (async () => {
-      const [p, upcoming, joined, w, s] = await Promise.all([
+      const [p, upcoming, joined, w, s, wx, ff, ann] = await Promise.all([
         data.getProfile(),
         data.getUpcomingRuns(),
         data.getJoinedClubs(),
         data.getWeeklyProgress(),
         data.getStreakWeeks(),
+        data.getWeather(),
+        data.getFriendFeed(),
+        data.getLatestAnnouncement(),
       ]);
       setProfile(p);
       setRuns(upcoming);
       setClubs(new Map(joined.map((c) => [c.id, c])));
       setWeekly(w);
       setStreak(s);
+      setWeather(wx);
+      setFriends(ff);
+      setAnnouncement(ann ?? null);
       const entries = await Promise.all(
         upcoming.map(async (r) => [r.id, await data.getRsvp(r.id)] as const),
       );
@@ -75,6 +87,8 @@ export default function HomePage() {
   }
 
   const progress = weekly.doneKm / weekly.goalKm;
+  const WeatherIcon = weather ? WEATHER_ICONS[weather.condition] : null;
+  const announcementClub = announcement ? clubs.get(announcement.clubId) : null;
 
   return (
     <div className="page">
@@ -82,14 +96,22 @@ export default function HomePage() {
         <div>
           <p className="stat-label">{greeting}</p>
           <h1 className="text-2xl font-black tracking-tight">{profile.name.split(" ")[0]}</h1>
+          {weather && WeatherIcon && (
+            <p className="flex items-center gap-1.5 mt-1.5 text-sm font-semibold" style={{ color: "var(--muted)" }}>
+              <WeatherIcon size={17} style={{ color: "var(--course)" }} />
+              <span className="font-extrabold tabular-nums" style={{ color: "var(--text)" }}>{weather.tempC}°</span>
+              {weather.line}
+            </p>
+          )}
         </div>
         <span className="streak-pill">
           <Flame size={15} strokeWidth={2.5} /> {streak}-week streak
         </span>
       </header>
 
+      {/* Weekly goal — Night Stage hero anchor */}
       <section className="px-4">
-        <div className="card flex items-center gap-5">
+        <div className="card card--stage stage flex items-center gap-5">
           <GoalRing progress={progress}>
             <span className="stat-value text-2xl">{weekly.doneKm.toFixed(1)}</span>
             <span className="stat-label mt-1">of {weekly.goalKm} km</span>
@@ -129,6 +151,45 @@ export default function HomePage() {
           ))
         )}
       </section>
+
+      {friends.length > 0 && (
+        <section className="px-4 mt-6">
+          <div className="flex items-center justify-between">
+            <h2 className="stat-label">Your people</h2>
+            <Link href="/clubs" className="btn-tertiary">
+              Your clubs <ChevronRight size={14} strokeWidth={2.5} />
+            </Link>
+          </div>
+          <div className="card mt-1 flex flex-col gap-1 py-2">
+            {friends.map((f) => (
+              <div key={f.id} className="flex items-center gap-3 py-1.5">
+                <span className="avatar">{f.initials}</span>
+                <div className="min-w-0">
+                  <p className="text-sm font-bold truncate">{f.name}</p>
+                  <p className="text-xs font-semibold truncate" style={{ color: "var(--muted)" }}>{f.line}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {announcement && (
+        <section className="px-4 mt-6 flex flex-col gap-3 pb-2">
+          <h2 className="stat-label">From your clubs</h2>
+          <Link href={`/clubs/${announcement.clubId}`} className="card flex gap-3">
+            <span className="flex items-center justify-center w-9 h-9 rounded-full shrink-0" style={{ background: "var(--surface-2)", color: "var(--course)" }}>
+              <Megaphone size={16} />
+            </span>
+            <div className="min-w-0">
+              <p className="text-sm leading-relaxed line-clamp-2">{announcement.body}</p>
+              <p className="text-xs font-semibold mt-1.5" style={{ color: "var(--muted)" }}>
+                {announcement.author}{announcementClub ? ` · ${announcementClub.name}` : ""}
+              </p>
+            </div>
+          </Link>
+        </section>
+      )}
 
       <TabBar />
     </div>

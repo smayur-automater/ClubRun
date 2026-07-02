@@ -7,14 +7,19 @@
  * input even against mocks to keep boundary discipline before a backend exists.
  */
 import type {
+  Achievement,
   Activity,
   Announcement,
   Badge,
   Club,
+  FriendActivity,
+  LeaderboardEntry,
   PersonalRecord,
   Profile,
   RsvpStatus,
   Run,
+  Weather,
+  WeekDay,
   WeeklyProgress,
 } from "./types";
 
@@ -86,63 +91,63 @@ const clubs: Club[] = [
 const runs: Run[] = [
   {
     id: "r1", clubId: "c1", title: "Neon Loop", startsAt: at(0, 21, 15),
-    meetPoint: "Customs House steps", distanceKm: 8, status: "scheduled",
+    meetPoint: "Customs House steps", distanceKm: 8, elevGainM: 42, status: "scheduled",
     paceGroups: [
       { id: "pg1", label: "Cruise", paceSecPerKm: 390, pacerName: "Sam K." },
       { id: "pg2", label: "Tempo", paceSecPerKm: 330, pacerName: "Priya N." },
     ],
-    goingCount: 38, goingPreview: ["SK", "PN", "JT", "MW"],
+    goingCount: 38, goingPreview: ["SK", "PN", "JT", "MW"], hasRoute: true,
   },
   {
     id: "r2", clubId: "c5", title: "Saturday Social 5K", startsAt: at(1, 8, 0),
-    meetPoint: "Enmore Park gates", distanceKm: 5, status: "scheduled",
+    meetPoint: "Enmore Park gates", distanceKm: 5, elevGainM: 25, status: "scheduled",
     paceGroups: [
       { id: "pg3", label: "Chatty", paceSecPerKm: 480, pacerName: "Dee L." },
       { id: "pg4", label: "Steady", paceSecPerKm: 420 },
     ],
-    goingCount: 64, goingPreview: ["DL", "AB", "Rh", "KO"],
+    goingCount: 64, goingPreview: ["DL", "AB", "Rh", "KO"], hasRoute: true,
   },
   {
     id: "r3", clubId: "c2", title: "Stair Repeats", startsAt: at(2, 6, 0),
-    meetPoint: "Milsons Point station", distanceKm: 10, status: "scheduled",
+    meetPoint: "Milsons Point station", distanceKm: 10, elevGainM: 210, status: "scheduled",
     paceGroups: [
       { id: "pg5", label: "Threshold", paceSecPerKm: 285, pacerName: "Marco V." },
       { id: "pg6", label: "Strong", paceSecPerKm: 315 },
     ],
-    goingCount: 21, goingPreview: ["MV", "CT", "LB"],
+    goingCount: 21, goingPreview: ["MV", "CT", "LB"], hasRoute: true,
   },
   {
     id: "r4", clubId: "c1", title: "Friday Night Flat 10", startsAt: at(3, 21, 15),
-    meetPoint: "Customs House steps", distanceKm: 10, status: "scheduled",
+    meetPoint: "Customs House steps", distanceKm: 10, elevGainM: 38, status: "scheduled",
     paceGroups: [
       { id: "pg7", label: "Cruise", paceSecPerKm: 390 },
       { id: "pg8", label: "Tempo", paceSecPerKm: 330, pacerName: "Priya N." },
     ],
-    goingCount: 26, goingPreview: ["PN", "JT", "EW"],
+    goingCount: 26, goingPreview: ["PN", "JT", "EW"], hasRoute: true,
   },
   {
     id: "r5", clubId: "c3", title: "Sunrise Six", startsAt: at(1, 5, 45),
-    meetPoint: "North Bondi surf club", distanceKm: 6, status: "scheduled",
+    meetPoint: "North Bondi surf club", distanceKm: 6, elevGainM: 64, status: "scheduled",
     paceGroups: [
       { id: "pg9", label: "Easy", paceSecPerKm: 420, pacerName: "Noah F." },
       { id: "pg10", label: "Brisk", paceSecPerKm: 345 },
     ],
-    goingCount: 87, goingPreview: ["NF", "GH", "TS", "YZ"],
+    goingCount: 87, goingPreview: ["NF", "GH", "TS", "YZ"], hasRoute: true,
   },
   {
     id: "r6", clubId: "c4", title: "Ridgeline Recon", startsAt: at(4, 7, 0),
-    meetPoint: "Wentworth Falls lookout carpark", distanceKm: 14, status: "scheduled",
+    meetPoint: "Wentworth Falls lookout carpark", distanceKm: 14, elevGainM: 480, status: "scheduled",
     paceGroups: [{ id: "pg11", label: "Adventure", paceSecPerKm: 450, pacerName: "Ivy R." }],
-    goingCount: 12, goingPreview: ["IR", "BQ"],
+    goingCount: 12, goingPreview: ["IR", "BQ"], hasRoute: true,
   },
   {
     id: "r7", clubId: "c6", title: "8 × 400m", startsAt: at(5, 18, 30),
-    meetPoint: "Warm-up track, gate C", distanceKm: 7, status: "scheduled",
+    meetPoint: "Warm-up track, gate C", distanceKm: 7, elevGainM: 6, status: "scheduled",
     paceGroups: [
       { id: "pg12", label: "Sub-20 5K", paceSecPerKm: 255 },
       { id: "pg13", label: "Sub-22 5K", paceSecPerKm: 280, pacerName: "Coach Ana" },
     ],
-    goingCount: 18, goingPreview: ["CA", "DK", "FP"],
+    goingCount: 18, goingPreview: ["CA", "DK", "FP"], hasRoute: false,
   },
 ];
 
@@ -186,7 +191,41 @@ const badges: Badge[] = [
   { slug: "night-owl", name: "Night Shift", description: "Ten runs after 9 PM", earnedAt: "2026-06-02" },
   { slug: "century", name: "Club 100", description: "100 km in a single month" },
   { slug: "pacer", name: "Metronome", description: "Pace a group at a club run" },
+  { slug: "tracked-first", name: "On the Board", description: "Record your first run in ClubRuns" },
 ];
+
+const weather: Weather = { tempC: 14, condition: "cloud", line: "Overcast, light breeze" };
+
+const friendFeed: FriendActivity[] = [
+  { id: "f1", name: "Priya N.", initials: "PN", line: "Ran 12.2 km — longest since April", when: daysAgo(0) },
+  { id: "f2", name: "Sam K.", initials: "SK", line: "Hit a 5K PR at the track — 21:48", when: daysAgo(1) },
+  { id: "f3", name: "Dee L.", initials: "DL", line: "8-week streak alive with a rainy 5K", when: daysAgo(1) },
+];
+
+/** Deterministic per-club weekly leaderboards (backend will own this). */
+const leaderboards: Record<string, LeaderboardEntry[]> = {
+  c1: [
+    { rank: 1, name: "Priya N.", initials: "PN", role: "Pacer", weekKm: 46.2, isYou: false },
+    { rank: 2, name: "Jordan T.", initials: "JT", weekKm: 38.5, isYou: false },
+    { rank: 3, name: "Alex Rivera", initials: "AR", weekKm: 18.4, isYou: true },
+    { rank: 4, name: "Sam K.", initials: "SK", role: "Pacer", weekKm: 17.1, isYou: false },
+    { rank: 5, name: "Mia W.", initials: "MW", weekKm: 12.9, isYou: false },
+  ],
+  c2: [
+    { rank: 1, name: "Marco V.", initials: "MV", role: "Pacer", weekKm: 52.7, isYou: false },
+    { rank: 2, name: "Casey T.", initials: "CT", weekKm: 41.0, isYou: false },
+    { rank: 3, name: "Lena B.", initials: "LB", weekKm: 33.6, isYou: false },
+    { rank: 4, name: "Alex Rivera", initials: "AR", weekKm: 18.4, isYou: true },
+    { rank: 5, name: "Owen D.", initials: "OD", weekKm: 15.2, isYou: false },
+  ],
+  c5: [
+    { rank: 1, name: "Dee L.", initials: "DL", role: "Organiser", weekKm: 24.8, isYou: false },
+    { rank: 2, name: "Alex Rivera", initials: "AR", weekKm: 18.4, isYou: true },
+    { rank: 3, name: "Aggie B.", initials: "AB", weekKm: 14.3, isYou: false },
+    { rank: 4, name: "Rhea H.", initials: "Rh", weekKm: 11.0, isYou: false },
+    { rank: 5, name: "Kai O.", initials: "KO", weekKm: 9.6, isYou: false },
+  ],
+};
 
 /** Mutable client-side state — the parts a backend would own. */
 const state = {
@@ -194,6 +233,7 @@ const state = {
   rsvps: new Map<string, RsvpStatus>([["r1", "going"], ["r2", "going"]]),
   streakWeeks: 12,
   weekly: { goalKm: profile.weeklyGoalKm, doneKm: 18.4, runs: 3 } satisfies WeeklyProgress,
+  hasRecordedInApp: false,
 };
 
 // ── Reads ────────────────────────────────────────────────────────
@@ -258,6 +298,45 @@ export async function getWeeklyProgress(): Promise<WeeklyProgress> {
   return { ...state.weekly };
 }
 
+export async function getWeather(): Promise<Weather> {
+  return weather;
+}
+
+export async function getFriendFeed(): Promise<FriendActivity[]> {
+  return friendFeed;
+}
+
+/** Most recent announcement across the user's joined clubs, for Home. */
+export async function getLatestAnnouncement(): Promise<Announcement | undefined> {
+  return announcements
+    .filter((a) => state.joinedClubIds.has(a.clubId))
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))[0];
+}
+
+export async function getLeaderboard(clubId: string): Promise<LeaderboardEntry[]> {
+  return leaderboards[clubId] ?? [];
+}
+
+/** Current week (Mon-first), km per day derived from activities — derivations don't drift. */
+export async function getWeekDays(): Promise<WeekDay[]> {
+  const now = new Date();
+  const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+  const labels = ["M", "T", "W", "T", "F", "S", "S"];
+  return labels.map((label, i) => {
+    const day = new Date(monday);
+    day.setDate(monday.getDate() + i);
+    const km =
+      activities
+        .filter((a) => {
+          const d = new Date(a.startedAt);
+          return d.getFullYear() === day.getFullYear() && d.getMonth() === day.getMonth() && d.getDate() === day.getDate();
+        })
+        .reduce((sum, a) => sum + a.distanceM, 0) / 1000;
+    return { label, km: Math.round(km * 10) / 10, isToday: day.toDateString() === now.toDateString() };
+  });
+}
+
 // ── Mutations ────────────────────────────────────────────────────
 
 export async function setRsvp(runId: string, status: RsvpStatus | null): Promise<void> {
@@ -279,8 +358,15 @@ export async function leaveClub(clubId: string): Promise<void> {
   state.joinedClubIds.delete(clubId);
 }
 
-/** Fold a finished recording into weekly progress + history. */
-export async function saveActivity(input: { durationS: number; distanceM: number }): Promise<Activity> {
+/**
+ * Fold a finished recording into weekly progress + history.
+ * Returns any achievement unlocked by the save — the caller decides whether
+ * to celebrate (docs/DESIGN_SYSTEM.md §4: overlay never fires on a routine finish).
+ */
+export async function saveActivity(input: {
+  durationS: number;
+  distanceM: number;
+}): Promise<{ activity: Activity; unlocked: Achievement | null }> {
   if (input.durationS <= 0 || input.distanceM <= 0) throw new Error("Activity must have positive duration and distance");
   const activity: Activity = {
     id: `t${Date.now()}`,
@@ -294,5 +380,15 @@ export async function saveActivity(input: { durationS: number; distanceM: number
   activities.unshift(activity);
   state.weekly.doneKm = Math.round((state.weekly.doneKm + input.distanceM / 1000) * 10) / 10;
   state.weekly.runs += 1;
-  return activity;
+
+  let unlocked: Achievement | null = null;
+  if (!state.hasRecordedInApp) {
+    state.hasRecordedInApp = true;
+    const badge = badges.find((b) => b.slug === "tracked-first");
+    if (badge && !badge.earnedAt) {
+      badge.earnedAt = new Date().toISOString();
+      unlocked = { kind: "badge", title: badge.name, line: badge.description };
+    }
+  }
+  return { activity, unlocked };
 }

@@ -22,7 +22,7 @@ export function GoalRing({ progress, size = 148, stroke = 10, children }: Props)
       <svg width={size} height={size} className="-rotate-90" aria-hidden>
         <circle className="ring-track" cx={size / 2} cy={size / 2} r={r} strokeWidth={stroke} fill="none" />
         <circle
-          className="ring-fill"
+          className={`ring-fill${clamped >= 1 ? " complete" : ""}`}
           cx={size / 2}
           cy={size / 2}
           r={r}
