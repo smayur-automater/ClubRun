@@ -1,11 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Flame, Lock, Moon, Sun, Footprints, Medal } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Flame, Lock, Moon, Sun, Footprints, Medal, LogOut } from "lucide-react";
 import { TabBar } from "@/components/TabBar";
 import { BarChart } from "@/components/BarChart";
 import { useTheme } from "@/components/ThemeProvider";
 import * as data from "@/lib/data";
+import { signOut } from "@/lib/auth";
 import type { Activity, Badge, Club, PersonalRecord, Profile, WeekDay } from "@/lib/types";
 import { formatDuration, formatKm, formatPace, formatShortDate } from "@/lib/format";
 
@@ -22,6 +24,7 @@ interface TimelineEntry {
 }
 
 export default function ProfilePage() {
+  const router = useRouter();
   const { theme, toggle } = useTheme();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -244,6 +247,19 @@ export default function ProfilePage() {
             ))}
           </div>
         </div>
+      </section>
+
+      <section className="px-4 mt-8 pb-2">
+        <button
+          type="button"
+          className="btn-secondary w-full"
+          onClick={() => {
+            signOut();
+            router.replace("/auth");
+          }}
+        >
+          <LogOut size={16} /> Sign out
+        </button>
       </section>
 
       <TabBar />

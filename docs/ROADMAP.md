@@ -31,8 +31,9 @@ Maintained by: CEO agent. This file plus `docs/DECISIONS.md` is the project memo
 
 - **M1 — v1 member MVP**: onboarding, home, explore, club detail, run detail + RSVP, record, profile — mocked data behind API-shaped repository. ✅
 - **M1.5 — Brand elevation** (founder directive): Cinder & Signal design system (three-accent semantic palette, Night Stage), custom RouteMap with route-draw animation, weekly BarChart, club leaderboards + cover identities, activity timeline, weather, friends' activity, achievement-celebration overlay. ✅ Deferred from the directive to M4+: club discussions, photo gallery, event calendar view; compact RouteMap previews on RunCards (perf/clutter call).
+- **M1.6 — Production + auth surface**: static-export PWA deployed to GitHub Pages from main on every merge; sign-in/sign-up/reset screens live behind a Supabase-shaped seam (`src/lib/auth.ts`) — founder configures Supabase, Stripe, and email services at M3 and the swap is per-module, not per-screen. ✅
 - **M2 — Quality**: unit tests on pure logic, Playwright smoke, CI. 
-- **M3 — Backend**: Supabase auth + Postgres schema from ARCHITECTURE.md, swap `lib/data.ts` mocks for real queries, instrumentation (activation/retention funnels).
+- **M3 — Backend**: Supabase auth + Postgres schema from ARCHITECTURE.md, swap `lib/data.ts` mocks for real queries and `lib/auth.ts` mock for Supabase Auth, Stripe billing for ClubRuns+/Club Pro, transactional email (run reminders, weekly summaries, password resets), instrumentation (activation/retention funnels). Tracking-depth features begin per `docs/FEATURE_BACKLOG.md` Tier 1.
 - **M4 — Organizer tools** (Club Pro surface): create club/run, recurring runs, attendance, QR check-in, announcements+push.
 - **M5 — Beta** (Phase 14): 3–5 real clubs, measure the PRD metrics before any paywall.
 
