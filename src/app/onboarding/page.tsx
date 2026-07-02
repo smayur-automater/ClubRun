@@ -49,7 +49,7 @@ export default function OnboardingPage() {
         <span className="inline-flex items-center gap-2 font-black tracking-tight text-lg">
           <span
             className="flex items-center justify-center w-8 h-8 rounded-full"
-            style={{ background: "var(--volt)", color: "var(--volt-ink)" }}
+            style={{ background: "var(--pace)", color: "var(--pace-ink)" }}
           >
             <Footprints size={17} strokeWidth={2.4} />
           </span>
@@ -62,7 +62,7 @@ export default function OnboardingPage() {
               className="h-1.5 rounded-full transition-all duration-300"
               style={{
                 width: i === step ? 24 : 8,
-                background: i <= step ? "var(--volt)" : "var(--surface-2)",
+                background: i <= step ? "var(--pace)" : "var(--surface-2)",
               }}
             />
           ))}
@@ -117,7 +117,7 @@ export default function OnboardingPage() {
                   type="button"
                   onClick={() => setGoal(g)}
                   className="card flex flex-col items-center py-6 transition-colors"
-                  style={goal === g ? { borderColor: "var(--volt)", background: "color-mix(in srgb, var(--volt) 8%, var(--surface))" } : undefined}
+                  style={goal === g ? { borderColor: "var(--course)", background: "color-mix(in srgb, var(--course) 10%, var(--surface))" } : undefined}
                 >
                   <span className="stat-value text-3xl">{g}</span>
                   <span className="stat-label mt-1.5">km / week</span>
@@ -128,7 +128,7 @@ export default function OnboardingPage() {
         )}
       </main>
 
-      <button type="button" className="btn-volt w-full" disabled={!canContinue} onClick={next}>
+      <button type="button" className="btn-primary w-full" disabled={!canContinue} onClick={next}>
         {step === 2 ? "Find my crew" : "Continue"} <ArrowRight size={17} strokeWidth={2.5} />
       </button>
     </div>
@@ -142,7 +142,7 @@ function OptionRow({ label, detail, selected, onSelect }: { label: string; detai
       onClick={onSelect}
       aria-pressed={selected}
       className="card flex items-center justify-between text-left transition-colors"
-      style={selected ? { borderColor: "var(--volt)", background: "color-mix(in srgb, var(--volt) 8%, var(--surface))" } : undefined}
+      style={selected ? { borderColor: "var(--course)", background: "color-mix(in srgb, var(--course) 10%, var(--surface))" } : undefined}
     >
       <span>
         <span className="block font-extrabold tracking-tight">{label}</span>
@@ -150,7 +150,7 @@ function OptionRow({ label, detail, selected, onSelect }: { label: string; detai
       </span>
       <span
         className="w-5 h-5 rounded-full border-2 shrink-0 transition-colors"
-        style={selected ? { borderColor: "var(--volt)", background: "var(--volt)" } : { borderColor: "var(--border)" }}
+        style={selected ? { borderColor: "var(--course)", background: "var(--course)" } : { borderColor: "var(--border)" }}
       />
     </button>
   );

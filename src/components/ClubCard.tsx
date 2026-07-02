@@ -10,7 +10,7 @@ export function ClubCard({ club }: { club: Club }) {
     <Link href={`/clubs/${club.id}`} className="card flex flex-col gap-2.5">
       <div className="flex items-center justify-between gap-2">
         <span className="tag">{VIBE_LABELS[club.vibe]}</span>
-        <span className="text-xs font-bold" style={{ color: "var(--volt)" }}>
+        <span className="text-xs font-bold tabular-nums" style={{ color: "var(--course)" }}>
           {formatPaceRange(club.paceMinSec, club.paceMaxSec)} /km
         </span>
       </div>

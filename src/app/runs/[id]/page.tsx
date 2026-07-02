@@ -3,6 +3,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, MapPin, Ruler, Users, Check, Zap } from "lucide-react";
 import { TabBar } from "@/components/TabBar";
+import { RouteMap } from "@/components/RouteMap";
 import * as data from "@/lib/data";
 import type { Club, RsvpStatus, Run } from "@/lib/types";
 import { formatPace, formatRunTime } from "@/lib/format";
@@ -51,7 +52,7 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
     return (
       <div className="page px-4 pt-6">
         <p className="font-extrabold">Run not found.</p>
-        <Link href="/" className="btn-ghost mt-4">Back home</Link>
+        <Link href="/" className="btn-secondary mt-4">Back home</Link>
         <TabBar />
       </div>
     );
@@ -69,17 +70,28 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
         >
           <ArrowLeft size={16} /> {club?.name ?? "Home"}
         </Link>
-        <p className="text-sm font-bold mt-3" style={{ color: "var(--volt)" }}>{formatRunTime(run.startsAt)}</p>
+        <p className="text-sm font-bold mt-3" style={{ color: "var(--course)" }}>{formatRunTime(run.startsAt)}</p>
         <h1 className="text-[1.7rem] font-black tracking-tight leading-tight mt-1">{run.title}</h1>
         <div className="flex items-center gap-4 text-xs font-semibold mt-3" style={{ color: "var(--muted)" }}>
           <span className="inline-flex items-center gap-1"><MapPin size={13} /> {run.meetPoint}</span>
-          <span className="inline-flex items-center gap-1"><Ruler size={13} /> {run.distanceKm} km</span>
-          <span className="inline-flex items-center gap-1"><Users size={13} /> {run.goingCount} going</span>
+          <span className="inline-flex items-center gap-1 tabular-nums"><Ruler size={13} /> {run.distanceKm} km</span>
+          <span className="inline-flex items-center gap-1 tabular-nums"><Users size={13} /> {run.goingCount} going</span>
         </div>
       </header>
 
+      {/* The flagship route-draw moment (docs/DESIGN_SYSTEM.md §6.3) */}
+      <section className="px-4 mt-4">
+        <RouteMap
+          seed={run.id}
+          distanceKm={run.distanceKm}
+          elevGainM={run.elevGainM}
+          hasRoute={run.hasRoute}
+          className="aspect-[16/10]"
+        />
+      </section>
+
       <section className="px-4 mt-5">
-        <button type="button" onClick={toggleGoing} aria-pressed={going} className={`${going ? "btn-ghost" : "btn-volt"} w-full`}>
+        <button type="button" onClick={toggleGoing} aria-pressed={going} className={`${going ? "btn-confirmed" : "btn-primary"} w-full`}>
           {going ? (<><Check size={17} strokeWidth={3} /> You&apos;re in — tap to bail</>) : "Count me in"}
         </button>
       </section>
@@ -96,7 +108,7 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
               onClick={() => setPaceGroupId(selected ? null : pg.id)}
               aria-pressed={selected}
               className="card flex items-center justify-between text-left transition-colors disabled:opacity-50"
-              style={selected ? { borderColor: "var(--volt)", background: "color-mix(in srgb, var(--volt) 8%, var(--surface))" } : undefined}
+              style={selected ? { borderColor: "var(--pace)", background: "color-mix(in srgb, var(--pace) 8%, var(--surface))" } : undefined}
             >
               <span>
                 <span className="block font-extrabold tracking-tight">{pg.label}</span>
@@ -104,7 +116,8 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
                   {pg.pacerName ? `Paced by ${pg.pacerName}` : "Self-paced"}
                 </span>
               </span>
-              <span className="stat-value text-lg" style={{ color: "var(--volt)" }}>
+              {/* Pace figure is a fact → course; picking it is a commitment → pace tint */}
+              <span className="stat-value text-lg" style={{ color: selected ? "var(--pace)" : "var(--course)" }}>
                 {formatPace(pg.paceSecPerKm)}<span className="text-xs font-bold" style={{ color: "var(--muted)" }}> /km</span>
               </span>
             </button>
@@ -130,9 +143,9 @@ export default function RunDetailPage({ params }: { params: Promise<{ id: string
       </section>
 
       <section className="px-4 mt-6 pb-2">
-        <Link href="/record" className="card flex items-center justify-between" style={{ borderColor: "color-mix(in srgb, var(--volt) 30%, var(--border))" }}>
+        <Link href="/record" className="card flex items-center justify-between" style={{ borderColor: "color-mix(in srgb, var(--signal) 30%, var(--border))" }}>
           <span className="flex items-center gap-3">
-            <span className="flex items-center justify-center w-9 h-9 rounded-full" style={{ background: "var(--volt)", color: "var(--volt-ink)" }}>
+            <span className="flex items-center justify-center w-9 h-9 rounded-full" style={{ background: "var(--signal)", color: "#ffffff" }}>
               <Zap size={16} strokeWidth={2.5} />
             </span>
             <span>

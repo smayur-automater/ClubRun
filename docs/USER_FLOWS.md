@@ -29,7 +29,7 @@ Explore search/filter → club card (pace range, next run, member count — enou
 
 ## Flow 4 — Record a run (core utility)
 
-Record tab → pre-run state (linked run banner if RSVP'd today) → Start → live metrics with pause/resume (44px+ controls, glanceable while moving: max type sizes, volt-on-carbon contrast) → Finish → summary (distance, time, pace, splits, streak delta) → Done → Home.
+Record tab → pre-run state (linked run banner if RSVP'd today) → Start → live metrics with pause/resume (44px+ controls, glanceable while moving: max type sizes on the fixed-dark Night Stage) → Finish → summary (distance, time, pace, splits, streak delta; achievement overlay only if something unlocked) → Done → Home.
 
 ## State rules
 

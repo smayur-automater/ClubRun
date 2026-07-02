@@ -19,9 +19,9 @@ Maintained by: CEO agent. This file plus `docs/DECISIONS.md` is the project memo
 | 7 | Database design | Designed | Schema in `docs/ARCHITECTURE.md`; implemented at backend milestone |
 | 8 | User flows | Done (v1) | `docs/USER_FLOWS.md` |
 | 9 | Wireframes | Merged into 10 | Deliberate: flows doc + design system make separate wireframes ceremony for a 4-agent team |
-| 10 | High-fidelity UI | Done (v1) | The v1 build itself |
-| 11 | Design system | Done (v1) | `docs/DESIGN_SYSTEM.md` (Volt on Carbon) |
-| 12 | Engineering implementation | **v1 shipped** | 7 screens over typed mock repository — see PRD scope |
+| 10 | High-fidelity UI | Done (v1.5) | The build itself, elevated by the brand directive pass |
+| 11 | Design system | **Done (v2)** | `docs/DESIGN_SYSTEM.md` (Cinder & Signal — supersedes Volt on Carbon) |
+| 12 | Engineering implementation | **v1.5 shipped** | 7 screens over typed mock repository + RouteMap, BarChart, leaderboard, timeline, achievement overlay |
 | 13 | Testing | Next | Unit tests for `format`/tracker/derivations, then Playwright smoke |
 | 14 | Beta launch | Blocked on backend | Gate: real auth + DB + instrumentation (see ARCHITECTURE v2) |
 | 15 | Marketing launch | Not started | |
@@ -29,7 +29,8 @@ Maintained by: CEO agent. This file plus `docs/DECISIONS.md` is the project memo
 
 ## Milestones
 
-- **M1 — v1 member MVP** (this build): onboarding, home, explore, club detail, run detail + RSVP, record, profile — mocked data behind API-shaped repository. ✅
+- **M1 — v1 member MVP**: onboarding, home, explore, club detail, run detail + RSVP, record, profile — mocked data behind API-shaped repository. ✅
+- **M1.5 — Brand elevation** (founder directive): Cinder & Signal design system (three-accent semantic palette, Night Stage), custom RouteMap with route-draw animation, weekly BarChart, club leaderboards + cover identities, activity timeline, weather, friends' activity, achievement-celebration overlay. ✅ Deferred from the directive to M4+: club discussions, photo gallery, event calendar view; compact RouteMap previews on RunCards (perf/clutter call).
 - **M2 — Quality**: unit tests on pure logic, Playwright smoke, CI. 
 - **M3 — Backend**: Supabase auth + Postgres schema from ARCHITECTURE.md, swap `lib/data.ts` mocks for real queries, instrumentation (activation/retention funnels).
 - **M4 — Organizer tools** (Club Pro surface): create club/run, recurring runs, attendance, QR check-in, announcements+push.

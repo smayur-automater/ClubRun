@@ -24,7 +24,7 @@ export function EmptyState({ icon: Icon, title, body, ctaLabel, ctaHref }: Props
         <p className="text-sm mt-1" style={{ color: "var(--muted)" }}>{body}</p>
       </div>
       {ctaLabel && ctaHref && (
-        <Link href={ctaHref} className="btn-volt mt-2" style={{ minHeight: 44, padding: "0.5rem 1.5rem", fontSize: "0.875rem" }}>
+        <Link href={ctaHref} className="btn-primary mt-2" style={{ minHeight: 44, padding: "0.5rem 1.5rem", fontSize: "0.875rem" }}>
           {ctaLabel}
         </Link>
       )}

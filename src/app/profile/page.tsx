@@ -1,11 +1,25 @@
 "use client";
 import { useEffect, useState } from "react";
-import { Flame, Lock, Moon, Sun, Footprints } from "lucide-react";
+import Link from "next/link";
+import { Flame, Lock, Moon, Sun, Footprints, Medal } from "lucide-react";
 import { TabBar } from "@/components/TabBar";
+import { BarChart } from "@/components/BarChart";
 import { useTheme } from "@/components/ThemeProvider";
 import * as data from "@/lib/data";
-import type { Activity, Badge, PersonalRecord, Profile } from "@/lib/types";
+import type { Activity, Badge, Club, PersonalRecord, Profile, WeekDay } from "@/lib/types";
 import { formatDuration, formatKm, formatPace, formatShortDate } from "@/lib/format";
+
+const WEEK_MS = 7 * 86_400_000;
+
+interface TimelineEntry {
+  key: string;
+  when: string;
+  kind: "run" | "moment";
+  title: string;
+  meta: string;
+  stat?: string;
+  statMeta?: string;
+}
 
 export default function ProfilePage() {
   const { theme, toggle } = useTheme();
@@ -13,22 +27,30 @@ export default function ProfilePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [records, setRecords] = useState<PersonalRecord[]>([]);
   const [badges, setBadges] = useState<Badge[]>([]);
+  const [clubs, setClubs] = useState<Club[]>([]);
+  const [week, setWeek] = useState<WeekDay[]>([]);
   const [streak, setStreak] = useState(0);
+  const [now, setNow] = useState(0);
 
   useEffect(() => {
     (async () => {
-      const [p, a, r, b, s] = await Promise.all([
+      const [p, a, r, b, c, w, s] = await Promise.all([
         data.getProfile(),
         data.getActivities(),
         data.getRecords(),
         data.getBadges(),
+        data.getJoinedClubs(),
+        data.getWeekDays(),
         data.getStreakWeeks(),
       ]);
       setProfile(p);
       setActivities(a);
       setRecords(r);
       setBadges(b);
+      setClubs(c);
+      setWeek(w);
       setStreak(s);
+      setNow(Date.now());
     })();
   }, []);
 
@@ -45,13 +67,35 @@ export default function ProfilePage() {
 
   const totalKm = activities.reduce((sum, a) => sum + a.distanceM, 0);
 
+  // One rail: runs + notable moments (recent badges), newest first
+  const timeline: TimelineEntry[] = [
+    ...activities.map((a): TimelineEntry => ({
+      key: a.id,
+      when: a.startedAt,
+      kind: "run",
+      title: a.title,
+      meta: `${formatShortDate(a.startedAt)} · ${formatDuration(a.durationS)}`,
+      stat: `${formatKm(a.distanceM)} km`,
+      statMeta: `${formatPace(a.avgPaceS)} /km`,
+    })),
+    ...badges
+      .filter((b) => b.earnedAt && now - new Date(b.earnedAt).getTime() < 30 * 86_400_000)
+      .map((b): TimelineEntry => ({
+        key: b.slug,
+        when: b.earnedAt!,
+        kind: "moment",
+        title: `Badge — ${b.name}`,
+        meta: `${formatShortDate(b.earnedAt!)} · ${b.description}`,
+      })),
+  ].sort((a, b) => b.when.localeCompare(a.when));
+
   return (
     <div className="page">
       <header className="px-4 pt-6 pb-4 flex items-start justify-between">
         <div className="flex items-center gap-3">
           <span
             className="flex items-center justify-center w-14 h-14 rounded-full text-lg font-black"
-            style={{ background: "var(--volt)", color: "var(--volt-ink)" }}
+            style={{ background: "var(--pace)", color: "var(--pace-ink)" }}
           >
             {profile.initials}
           </span>
@@ -84,13 +128,22 @@ export default function ProfilePage() {
             <p className="stat-label mt-1.5">runs</p>
           </div>
           <div className="card py-4">
-            <p className="stat-value text-xl inline-flex items-center gap-1" style={{ color: "var(--volt)" }}>
+            <p className="stat-value text-xl inline-flex items-center gap-1" style={{ color: "var(--pace)" }}>
               <Flame size={18} strokeWidth={2.5} />{streak}
             </p>
             <p className="stat-label mt-1.5">week streak</p>
           </div>
         </div>
       </section>
+
+      {week.length > 0 && (
+        <section className="px-4 mt-6">
+          <h2 className="stat-label mb-3">This week</h2>
+          <div className="card card--stage stage">
+            <BarChart days={week} />
+          </div>
+        </section>
+      )}
 
       <section className="px-4 mt-6">
         <h2 className="stat-label mb-3">Personal records</h2>
@@ -105,18 +158,43 @@ export default function ProfilePage() {
         </div>
       </section>
 
+      {clubs.length > 0 && (
+        <section className="px-4 mt-6">
+          <h2 className="stat-label mb-3">Clubs</h2>
+          <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
+            {clubs.map((c) => (
+              <Link key={c.id} href={`/clubs/${c.id}`} className="flex flex-col items-center gap-1.5 w-16 shrink-0">
+                <span
+                  className="flex items-center justify-center w-9 h-9 rounded-xl text-[0.6875rem] font-black"
+                  style={{ background: "var(--surface-2)", color: "var(--text)", border: "1px solid var(--border)" }}
+                >
+                  {c.name.split(" ").slice(0, 2).map((w) => w[0]).join("")}
+                </span>
+                <span className="text-[0.625rem] font-bold text-center leading-tight line-clamp-2" style={{ color: "var(--muted)" }}>
+                  {c.name}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
+
       <section className="px-4 mt-6">
         <h2 className="stat-label mb-3">Badges</h2>
         <div className="grid grid-cols-3 gap-3">
           {badges.map((b) => {
             const locked = !b.earnedAt;
+            const fresh = b.earnedAt && now > 0 && now - new Date(b.earnedAt).getTime() < WEEK_MS;
             return (
-              <div key={b.slug} className="card flex flex-col items-center py-4 text-center gap-2" style={locked ? { opacity: 0.45 } : undefined}>
+              <div key={b.slug} className="card relative flex flex-col items-center py-4 text-center gap-2" style={locked ? { opacity: 0.45 } : undefined}>
+                {fresh && (
+                  <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 rounded-full" style={{ background: "var(--signal)" }} aria-label="New badge" />
+                )}
                 <span
                   className="flex items-center justify-center w-10 h-10 rounded-full"
                   style={locked
                     ? { background: "var(--surface-2)", color: "var(--muted)" }
-                    : { background: "color-mix(in srgb, var(--volt) 16%, transparent)", color: "var(--volt)" }}
+                    : { background: "color-mix(in srgb, var(--pace) 16%, transparent)", color: "var(--pace)" }}
                 >
                   {locked ? <Lock size={16} /> : <Footprints size={17} strokeWidth={2.2} />}
                 </span>
@@ -127,22 +205,45 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      <section className="px-4 mt-6 flex flex-col gap-3">
-        <h2 className="stat-label">Recent runs</h2>
-        {activities.map((a) => (
-          <div key={a.id} className="card flex items-center justify-between">
-            <div>
-              <p className="font-extrabold tracking-tight text-sm">{a.title}</p>
-              <p className="text-xs font-semibold mt-0.5" style={{ color: "var(--muted)" }}>
-                {formatShortDate(a.startedAt)} · {formatDuration(a.durationS)}
-              </p>
-            </div>
-            <div className="text-right">
-              <p className="stat-value text-lg">{formatKm(a.distanceM)} <span className="text-xs font-bold" style={{ color: "var(--muted)" }}>km</span></p>
-              <p className="text-xs font-semibold mt-0.5" style={{ color: "var(--muted)" }}>{formatPace(a.avgPaceS)} /km</p>
-            </div>
+      <section className="px-4 mt-6 pb-2">
+        <h2 className="stat-label mb-3">Activity</h2>
+        <div className="relative pl-6">
+          {/* The rail */}
+          <span className="absolute left-[3px] top-2 bottom-2 w-[1.5px]" style={{ background: "var(--border)" }} aria-hidden />
+          <div className="flex flex-col gap-3">
+            {timeline.map((entry) => (
+              <div key={entry.key} className="relative">
+                {entry.kind === "run" ? (
+                  <span
+                    className="absolute -left-6 top-4 w-2 h-2 rounded-full -translate-x-[0.5px]"
+                    style={{ background: "var(--pace)" }}
+                    aria-hidden
+                  />
+                ) : (
+                  <span
+                    className="absolute -left-[31px] top-3 flex items-center justify-center w-5 h-5 rounded-full"
+                    style={{ background: "color-mix(in srgb, var(--signal) 16%, var(--surface))", color: "var(--signal)", border: "1px solid color-mix(in srgb, var(--signal) 40%, transparent)" }}
+                    aria-hidden
+                  >
+                    <Medal size={11} strokeWidth={2.5} />
+                  </span>
+                )}
+                <div className="card flex items-center justify-between">
+                  <div className="min-w-0">
+                    <p className="font-extrabold tracking-tight text-sm truncate">{entry.title}</p>
+                    <p className="text-xs font-semibold mt-0.5 truncate" style={{ color: "var(--muted)" }}>{entry.meta}</p>
+                  </div>
+                  {entry.stat && (
+                    <div className="text-right shrink-0 ml-3">
+                      <p className="stat-value text-lg">{entry.stat}</p>
+                      <p className="text-xs font-semibold mt-0.5 tabular-nums" style={{ color: "var(--muted)" }}>{entry.statMeta}</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        </div>
       </section>
 
       <TabBar />

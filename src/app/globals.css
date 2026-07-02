@@ -1,33 +1,57 @@
 @import "tailwindcss";
 
-/* ── Volt on Carbon — tokens (docs/DESIGN_SYSTEM.md) ─────────────
-   Dark-first: running happens at 5:30 AM and 9 PM. */
+/* ── Cinder & Signal — tokens (docs/DESIGN_SYSTEM.md §2) ─────────
+   Three accents, one job each: --pace (green) = your progress,
+   --course (blue) = the facts, --signal (orange-red) = do this now. */
 :root {
-  --bg: #0b0c0f;
-  --surface: #141519;
-  --surface-2: #1d1f25;
-  --border: #26282f;
-  --text: #f4f4f2;
-  --muted: #8b8e98;
-  --volt: #c8ff3d;
-  --volt-ink: #101203;
-  --up: #4ade80;
-  --down: #f87171;
-  --skeleton: #1d1f25;
+  --bg: #0a0b0e;
+  --surface: #15171c;
+  --surface-2: #1d2028;
+  --border: #272b34;
+  --text: #f5f6f8;
+  --muted: #9198a6;
+  --pace: #c8ff3d;
+  --pace-ink: #0f1300;
+  --course: #4c8eff;
+  --signal: #d53f1e;
+  --signal-2: #ff6a45;
+  --skeleton: #1d2028;
+
+  --ease-glide: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-press: 90ms;
+  --dur-ui: 150ms;
 }
 
 html.light {
-  --bg: #fafaf7;
+  --bg: #fafaf9;
   --surface: #ffffff;
-  --surface-2: #f1f1ec;
-  --border: #e5e5de;
-  --text: #151519;
-  --muted: #6d6f78;
-  --volt: #9bd800;
-  --volt-ink: #101203;
-  --up: #15803d;
-  --down: #dc2626;
-  --skeleton: #ecece5;
+  --surface-2: #eef0f2;
+  --border: #e1e4e9;
+  --text: #14161a;
+  --muted: #6a7180;
+  --pace: #4b7a00;
+  --pace-ink: #0f1300;
+  --course: #1d5fd1;
+  --signal: #d53f1e;
+  --signal-2: #b8320f;
+  --skeleton: #eef0f2;
+}
+
+/* Night Stage — data surfaces render dark regardless of theme (§2).
+   Overrides the semantic tokens locally so children need no changes. */
+.stage {
+  --surface: #15171c;
+  --surface-2: #1d2028;
+  --border: #272b34;
+  --text: #f5f6f8;
+  --muted: #9198a6;
+  --pace: #c8ff3d;
+  --pace-ink: #0f1300;
+  --course: #4c8eff;
+  --signal: #ff6a45;
+  --skeleton: #1d2028;
+  color: var(--text);
 }
 
 @theme inline {
@@ -37,8 +61,9 @@ html.light {
   --color-border: var(--border);
   --color-text: var(--text);
   --color-muted: var(--muted);
-  --color-volt: var(--volt);
-  --color-volt-ink: var(--volt-ink);
+  --color-pace: var(--pace);
+  --color-course: var(--course);
+  --color-signal: var(--signal);
 }
 
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
@@ -52,7 +77,7 @@ body {
   transition: background 0.2s, color 0.2s;
 }
 
-/* ── Typography helpers ─────────────────────────────────────────── */
+/* ── Typography (§3) ────────────────────────────────────────────── */
 .stat-value {
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -67,56 +92,95 @@ body {
   color: var(--muted);
 }
 
-/* ── Buttons — all ≥48px, tap targets ≥44px ─────────────────────── */
-.btn-volt {
+/* ── Buttons — de-pilled, radius 14px (§4) ──────────────────────── */
+.btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 48px;
-  padding: 0.75rem 1.75rem;
-  background: var(--volt);
-  color: var(--volt-ink);
+  min-height: 50px;
+  padding: 0.75rem 1.5rem;
+  background: var(--signal);
+  color: #ffffff;
   font-weight: 800;
   font-size: 0.9375rem;
   letter-spacing: -0.01em;
-  border-radius: 9999px;
+  border-radius: 14px;
   border: none;
   cursor: pointer;
   text-decoration: none;
-  transition: transform 0.1s, filter 0.15s;
+  transition: transform var(--dur-press), filter var(--dur-ui);
 }
-.btn-volt:hover { filter: brightness(1.06); }
-.btn-volt:active { transform: scale(0.97); }
-.btn-volt:disabled { opacity: 0.4; cursor: default; }
+.btn-primary:hover { filter: brightness(1.06); }
+html.light .btn-primary:hover { filter: brightness(0.96); }
+.btn-primary:active { transform: scale(0.97); }
+.btn-primary:disabled { opacity: 0.38; cursor: default; }
 
-.btn-ghost {
+.btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 48px;
-  padding: 0.75rem 1.75rem;
+  min-height: 50px;
+  padding: 0.75rem 1.5rem;
   background: transparent;
   color: var(--text);
   font-weight: 700;
   font-size: 0.9375rem;
-  border-radius: 9999px;
+  border-radius: 14px;
   border: 1px solid var(--border);
   cursor: pointer;
   text-decoration: none;
-  transition: background 0.15s, transform 0.1s, border-color 0.15s;
+  transition: background var(--dur-ui), transform var(--dur-press), border-color var(--dur-ui);
 }
-.btn-ghost:hover { background: var(--surface-2); }
-.btn-ghost:active { transform: scale(0.97); }
+.btn-secondary:hover { background: var(--surface-2); }
+.btn-secondary:active { transform: scale(0.97); }
 
-/* ── Cards & chips ──────────────────────────────────────────────── */
+.btn-tertiary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 44px;
+  padding: 0.5rem 0.5rem;
+  background: none;
+  border: none;
+  color: var(--course);
+  font-weight: 700;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+/* Action-became-status: signal asks, pace confirms (§4) */
+.btn-confirmed {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 50px;
+  padding: 0.75rem 1.5rem;
+  background: color-mix(in srgb, var(--pace) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pace) 40%, transparent);
+  color: var(--pace);
+  font-weight: 800;
+  font-size: 0.9375rem;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: transform var(--dur-press);
+}
+.btn-confirmed:active { transform: scale(0.97); }
+
+/* ── Cards & chips (§4) ─────────────────────────────────────────── */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px;
+  border-radius: 16px;
   padding: 1.125rem;
   transition: background 0.2s, border-color 0.2s;
+}
+.card--stage {
+  background: #15171c;
+  border-color: #272b34;
 }
 
 .chip {
@@ -124,21 +188,22 @@ body {
   align-items: center;
   gap: 0.375rem;
   min-height: 44px;
-  padding: 0.5rem 1rem;
-  border-radius: 9999px;
+  padding: 0.5rem 0.875rem;
+  border-radius: 10px;
   border: 1px solid var(--border);
   background: var(--surface);
   color: var(--text);
   font-size: 0.8125rem;
   font-weight: 600;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s, transform 0.1s;
+  transition: background var(--dur-ui), color var(--dur-ui), border-color var(--dur-ui), transform var(--dur-press);
 }
 .chip:active { transform: scale(0.96); }
+/* Filters/preferences select facts → course */
 .chip.active {
-  background: var(--volt);
-  border-color: var(--volt);
-  color: var(--volt-ink);
+  background: color-mix(in srgb, var(--course) 12%, var(--surface));
+  border-color: var(--course);
+  color: var(--course);
   font-weight: 700;
 }
 
@@ -160,17 +225,16 @@ body {
   align-items: center;
   gap: 0.375rem;
   padding: 0.375rem 0.75rem;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--volt) 14%, transparent);
-  border: 1px solid color-mix(in srgb, var(--volt) 35%, transparent);
-  color: var(--volt);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--pace) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pace) 35%, transparent);
+  color: var(--pace);
   font-size: 0.8125rem;
   font-weight: 800;
   font-variant-numeric: tabular-nums;
 }
-html.light .streak-pill { color: #5a7f00; }
 
-/* ── Avatar stack ───────────────────────────────────────────────── */
+/* ── Avatar ─────────────────────────────────────────────────────── */
 .avatar {
   display: inline-flex;
   align-items: center;
@@ -186,7 +250,7 @@ html.light .streak-pill { color: #5a7f00; }
   letter-spacing: 0;
 }
 
-/* ── Tab bar — Record is the one loud element ───────────────────── */
+/* ── Tab bar (§4) — Record disc is the one signal-colored element ─ */
 .tabbar {
   position: fixed;
   bottom: 0;
@@ -195,7 +259,7 @@ html.light .streak-pill { color: #5a7f00; }
   display: flex;
   align-items: stretch;
   background: color-mix(in srgb, var(--bg) 88%, transparent);
-  backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px); /* the one sanctioned blur surface */
   border-top: 1px solid var(--border);
   padding-bottom: env(safe-area-inset-bottom, 0);
   z-index: 50;
@@ -220,9 +284,20 @@ html.light .streak-pill { color: #5a7f00; }
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
-  transition: color 0.15s;
+  position: relative;
+  transition: color var(--dur-ui);
 }
 .tab-item.active { color: var(--text); }
+/* Redundant, non-color location cue */
+.tab-item.active::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: var(--course);
+}
 
 .tab-record {
   flex: 1;
@@ -239,10 +314,10 @@ html.light .streak-pill { color: #5a7f00; }
   height: 56px;
   margin-top: -18px;
   border-radius: 9999px;
-  background: var(--volt);
-  color: var(--volt-ink);
-  box-shadow: 0 6px 24px color-mix(in srgb, var(--volt) 40%, transparent);
-  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: var(--signal);
+  color: #ffffff;
+  box-shadow: 0 6px 24px color-mix(in srgb, var(--signal) 40%, transparent);
+  transition: transform 0.2s var(--ease-spring);
 }
 .tab-record:active .disc { transform: scale(0.92); }
 
@@ -252,18 +327,74 @@ html.light .streak-pill { color: #5a7f00; }
   view-transition-name: page;
 }
 
-/* ── Goal ring ──────────────────────────────────────────────────── */
+/* ── Goal ring (§4) ─────────────────────────────────────────────── */
 .ring-track { stroke: var(--surface-2); }
 .ring-fill {
-  stroke: var(--volt);
+  stroke: var(--pace);
   stroke-linecap: round;
-  animation: ring-in 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: ring-in 600ms var(--ease-glide);
 }
 @keyframes ring-in {
   from { stroke-dashoffset: var(--ring-c); }
 }
+/* Goal met: one quiet pulse — the loud celebration belongs to the overlay */
+.ring-fill.complete {
+  animation: ring-in 600ms var(--ease-glide), ring-pulse 500ms ease-in-out 700ms;
+}
+@keyframes ring-pulse {
+  50% { opacity: 0.5; }
+}
 
-/* ── Skeleton & empty states ────────────────────────────────────── */
+/* ── RouteMap (§4) ──────────────────────────────────────────────── */
+.route-path {
+  stroke: var(--course);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  animation: route-draw 900ms var(--ease-glide) both;
+}
+@keyframes route-draw {
+  from { stroke-dashoffset: var(--route-len); }
+  to { stroke-dashoffset: 0; }
+}
+.route-finish {
+  animation: marker-pop 220ms var(--ease-spring) 880ms both;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+@keyframes marker-pop {
+  0% { transform: scale(0.8); opacity: 0; }
+  70% { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+/* ── BarChart (§4) ──────────────────────────────────────────────── */
+.bar-grow {
+  animation: bar-in 420ms var(--ease-glide) both;
+  animation-delay: var(--bar-delay, 0ms);
+  transform-origin: bottom;
+}
+@keyframes bar-in {
+  from { transform: scaleY(0); }
+}
+
+/* ── Achievement overlay (§4) ───────────────────────────────────── */
+.overlay-enter {
+  animation: overlay-in 260ms var(--ease-glide) both;
+}
+@keyframes overlay-in {
+  from { transform: scale(0.94); opacity: 0; }
+}
+.overlay-ring {
+  stroke: var(--signal);
+  fill: none;
+  stroke-width: 2;
+  stroke-linecap: round;
+  animation: route-draw 500ms var(--ease-glide) 340ms both;
+}
+
+/* ── Skeleton, live dot ─────────────────────────────────────────── */
 @keyframes shimmer {
   0% { background-position: -400px 0; }
   100% { background-position: 400px 0; }
@@ -272,10 +403,9 @@ html.light .streak-pill { color: #5a7f00; }
   background: linear-gradient(90deg, var(--skeleton) 25%, var(--surface-2) 50%, var(--skeleton) 75%);
   background-size: 800px 100%;
   animation: shimmer 1.4s ease-in-out infinite;
-  border-radius: 10px;
+  border-radius: 16px;
 }
 
-/* ── Live run pulse ─────────────────────────────────────────────── */
 @keyframes live-pulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.35; }
@@ -284,7 +414,7 @@ html.light .streak-pill { color: #5a7f00; }
   width: 8px;
   height: 8px;
   border-radius: 9999px;
-  background: var(--volt);
+  background: var(--signal);
   animation: live-pulse 1.6s ease-in-out infinite;
 }
 
@@ -309,23 +439,29 @@ html.light .streak-pill { color: #5a7f00; }
     animation-duration: 0s !important;
     animation-delay: 0s !important;
   }
-  .skeleton, .live-dot, .ring-fill { animation: none; }
+  .skeleton, .live-dot, .ring-fill, .bar-grow { animation: none; }
+  .route-path { animation: none; stroke-dashoffset: 0 !important; }
+  .route-finish, .overlay-ring { animation: none; opacity: 1; stroke-dashoffset: 0 !important; }
+  .overlay-enter { animation: overlay-fade 200ms ease-out both; }
+}
+@keyframes overlay-fade {
+  from { opacity: 0; }
 }
 
 /* ── Inputs ─────────────────────────────────────────────────────── */
 input, select, textarea {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 12px;
   color: var(--text);
   padding: 0.75rem 1rem;
   min-height: 48px;
   font-size: 0.9375rem;
   width: 100%;
-  transition: border-color 0.15s;
+  transition: border-color var(--dur-ui);
 }
 input::placeholder { color: var(--muted); }
 input:focus, select:focus, textarea:focus {
   outline: none;
-  border-color: var(--volt);
+  border-color: var(--course);
 }
