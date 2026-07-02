@@ -246,6 +246,15 @@ export async function getClubs(): Promise<Club[]> {
   return clubs;
 }
 
+/** Static-export route enumeration (generateStaticParams). */
+export async function getClubIds(): Promise<string[]> {
+  return clubs.map((c) => c.id);
+}
+
+export async function getRunIds(): Promise<string[]> {
+  return runs.map((r) => r.id);
+}
+
 export async function getClub(id: string): Promise<Club | undefined> {
   return clubs.find((c) => c.id === id);
 }
