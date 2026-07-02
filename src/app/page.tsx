@@ -8,6 +8,7 @@ import { GoalRing } from "@/components/GoalRing";
 import { RunCard } from "@/components/RunCard";
 import { EmptyState } from "@/components/EmptyState";
 import * as data from "@/lib/data";
+import { getSession } from "@/lib/auth";
 import type { Announcement, Club, FriendActivity, Profile, RsvpStatus, Run, Weather, WeeklyProgress } from "@/lib/types";
 
 const WEATHER_ICONS = { sun: Sun, cloud: Cloud, rain: CloudRain, snow: Snowflake } as const;
@@ -23,13 +24,20 @@ export default function HomePage() {
   const [weather, setWeather] = useState<Weather | null>(null);
   const [friends, setFriends] = useState<FriendActivity[]>([]);
   const [announcement, setAnnouncement] = useState<Announcement | null>(null);
+  const [firstName, setFirstName] = useState<string | null>(null);
 
   useEffect(() => {
+    const session = getSession();
+    if (!session) {
+      router.replace("/auth");
+      return;
+    }
     if (!localStorage.getItem("cr.onboarded")) {
       router.replace("/onboarding");
       return;
     }
     (async () => {
+      setFirstName(session.name.split(" ")[0]);
       const [p, upcoming, joined, w, s, wx, ff, ann] = await Promise.all([
         data.getProfile(),
         data.getUpcomingRuns(),
@@ -95,7 +103,7 @@ export default function HomePage() {
       <header className="px-4 pt-6 pb-4 flex items-start justify-between">
         <div>
           <p className="stat-label">{greeting}</p>
-          <h1 className="text-2xl font-black tracking-tight">{profile.name.split(" ")[0]}</h1>
+          <h1 className="text-2xl font-black tracking-tight">{firstName ?? profile.name.split(" ")[0]}</h1>
           {weather && WeatherIcon && (
             <p className="flex items-center gap-1.5 mt-1.5 text-sm font-semibold" style={{ color: "var(--muted)" }}>
               <WeatherIcon size={17} style={{ color: "var(--course)" }} />

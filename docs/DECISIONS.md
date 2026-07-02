@@ -39,3 +39,8 @@ The prior "ClubRun" club-admin SaaS (7-screen MVP on this branch's history) and 
 - Palette validated with the dataviz six-checks validator: CVD separation and surface contrast pass; the categorical lightness-band check was judged not applicable because the three accents are semantic roles never plotted as one series.
 - Achievement overlay fires only on badge/PR/streak-milestone unlocks, never routine finishes; v1's reachable trigger is the "On the Board" first-recorded-run badge.
 - Deferred from the directive (logged in ROADMAP M1.5): club discussions, photo gallery, calendar view, RunCard map previews.
+
+**2026-07-02 — Production promotion + auth surface (founder directive) — CEO/Engineering.**
+- Production architecture for v1: static-export PWA on GitHub Pages, deployed automatically from main only (`.github/workflows/deploy.yml`). Chosen because v1 is fully client-side over mocks and the repo has no hosting credentials — a real URL today beats a blocked Vercel setup; M3's backend forces the move to a server runtime anyway.
+- Auth ships as screens + a Supabase-shaped seam (`src/lib/auth.ts`: signInWithPassword/signUp/signInWithOAuth-style/reset/signOut over localStorage). Founder will configure Supabase, Stripe, and email at M3; the contract means those land module-by-module with zero screen changes.
+- Feature/monetization advisory recorded in `docs/FEATURE_BACKLOG.md` (three tiers, revenue-line mapping, explicit rejections).
