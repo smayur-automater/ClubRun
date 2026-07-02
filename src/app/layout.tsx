@@ -10,11 +10,14 @@ export const metadata: Metadata = {
   description:
     "Find your crew, RSVP to the run, show up, track it together. The social running app built around the group run.",
   appleWebApp: { capable: true, statusBarStyle: "black-translucent", title: "ClubRuns" },
-  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
+  icons: {
+    icon: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon-192.png`,
+    apple: `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}/icon-192.png`,
+  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0b0c0f",
+  themeColor: "#0a0b0e",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
